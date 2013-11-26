@@ -20,7 +20,7 @@
 #ifndef SyntroVIEW_H
 #define SyntroVIEW_H
 
-#define	PRODUCT_TYPE "Syntroview"
+#define	PRODUCT_TYPE "SyntroView"
 
 #include <QtGui>
 
