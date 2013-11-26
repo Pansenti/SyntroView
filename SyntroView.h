@@ -1,30 +1,30 @@
 //
-//  Copyright (c) 2013 symotes, LLC.
+//  Copyright (c) 2012, 2013 Pansenti, LLC.
+//	
+//  This file is part of Syntro
 //
-//  This file is part of symotesview.
-//
-//  symotesview is free software: you can redistribute it and/or modify
+//  Syntro is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
 //
-//  symotesview is distributed in the hope that it will be useful,
+//  Syntro is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with symotesview.  If not, see <http://www.gnu.org/licenses/>.
+//  along with Syntro.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef SYMOTESVIEW_H
-#define SYMOTESVIEW_H
+#ifndef SyntroVIEW_H
+#define SyntroVIEW_H
 
-#define	PRODUCT_TYPE "symotesview"
+#define	PRODUCT_TYPE "Syntroview"
 
 #include <QtGui>
 
-#include "ui_SymotesView.h"
+#include "ui_SyntroView.h"
 #include "SyntroLib.h"
 #include "DisplayStats.h"
 #include "ViewClient.h"
@@ -37,12 +37,12 @@
 #include <QAudioOutput>
 #endif
 
-class SymotesView : public QMainWindow
+class SyntroView : public QMainWindow
 {
 	Q_OBJECT
 
 public:
-    SymotesView();
+    SyntroView();
 
 public slots:
 	void onStats();
@@ -83,7 +83,7 @@ private:
 	void saveWindowState();
 	void restoreWindowState();
 
-	Ui::ViewTestClass ui;
+	Ui::SyntroViewClass ui;
 
 	ViewClient *m_client;
 	QGridLayout *m_grid;
@@ -122,4 +122,4 @@ private:
 	QString m_logTag;
 };
 
-#endif // SYMOTESVIEW_H
+#endif // SyntroVIEW_H

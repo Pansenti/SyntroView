@@ -1,23 +1,23 @@
 //
-//  Copyright (c) 2013 symotes, LLC.
+//  Copyright (c) 2012, 2013 Pansenti, LLC.
+//	
+//  This file is part of Syntro
 //
-//  This file is part of symotesview.
-//
-//  symotesview is free software: you can redistribute it and/or modify
+//  Syntro is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
 //
-//  symotesview is distributed in the hope that it will be useful,
+//  Syntro is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with symotesview.  If not, see <http://www.gnu.org/licenses/>.
+//  along with Syntro.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "SymotesView.h"
+#include "SyntroView.h"
 #include "SyntroAboutDlg.h"
 #include "BasicSetupDlg.h"
 #include "SelectStreamsDlg.h"
@@ -25,10 +25,10 @@
 
 #define GRID_SPACING 3
 
-SymotesView::SymotesView()
+SyntroView::SyntroView()
 	: QMainWindow()
 {
-    m_logTag = "SymotesView";
+    m_logTag = "SyntroView";
 	ui.setupUi(this);
 
 	m_singleCameraId = -1;
@@ -87,13 +87,13 @@ SymotesView::SymotesView()
 	m_enableServicesTimer = -1;
 }
 
-void SymotesView::onStats()
+void SyntroView::onStats()
 {
 	m_displayStats->activateWindow();
 	m_displayStats->show();
 }
 
-void SymotesView::closeEvent(QCloseEvent *)
+void SyntroView::closeEvent(QCloseEvent *)
 {
  	killTimer(m_statusTimer);
 
@@ -128,7 +128,7 @@ void SymotesView::closeEvent(QCloseEvent *)
 	SyntroUtils::syntroAppExit();
 }
 
-void SymotesView::timerEvent(QTimerEvent *event)
+void SyntroView::timerEvent(QTimerEvent *event)
 {
 	if (event->timerId() == m_enableServicesTimer) {
 		emit addStreams();
@@ -140,7 +140,7 @@ void SymotesView::timerEvent(QTimerEvent *event)
 }
 
 
-void SymotesView::singleCameraClosed()
+void SyntroView::singleCameraClosed()
 {
 	if (m_singleCamera) {
 		delete m_singleCamera;
@@ -152,7 +152,7 @@ void SymotesView::singleCameraClosed()
 	}
 }
 
-void SymotesView::imageMousePress(int id)
+void SyntroView::imageMousePress(int id)
 {
 	if ((id == m_activeAudioSlot) && (m_singleCameraId < 0)) {
 		m_windowList[id]->setSelected(false);
@@ -173,7 +173,7 @@ void SymotesView::imageMousePress(int id)
 	m_singleCamera->newImage(m_windowList[id]->m_image);
 }
 
-void SymotesView::imageDoubleClick(int id)
+void SyntroView::imageDoubleClick(int id)
 {
 	if (m_singleCameraId >= 0)
 		return;
@@ -197,7 +197,7 @@ void SymotesView::imageDoubleClick(int id)
 	m_singleCamera->newImage(m_windowList[id]->m_image);
 }
 
-void SymotesView::onShowName()
+void SyntroView::onShowName()
 {
 	m_showName = ui.actionShow_name->isChecked();
 
@@ -205,7 +205,7 @@ void SymotesView::onShowName()
 		m_windowList[i]->setShowName(m_showName);
 }
 
-void SymotesView::onShowDate()
+void SyntroView::onShowDate()
 {
 	m_showDate = ui.actionShow_date->isChecked();
 
@@ -213,7 +213,7 @@ void SymotesView::onShowDate()
 		m_windowList[i]->setShowDate(m_showDate);
 }
 
-void SymotesView::onShowTime()
+void SyntroView::onShowTime()
 {
 	m_showTime = ui.actionShow_time->isChecked();
 
@@ -221,7 +221,7 @@ void SymotesView::onShowTime()
 		m_windowList[i]->setShowTime(m_showTime);
 }
 
-void SymotesView::onTextColor()
+void SyntroView::onTextColor()
 {
 	m_textColor = QColorDialog::getColor(m_textColor, this);
 
@@ -229,7 +229,7 @@ void SymotesView::onTextColor()
 		m_windowList[i]->setTextColor(m_textColor);
 }
 
-void SymotesView::newStreams()
+void SyntroView::newStreams()
 {
 	if (m_enableServicesTimer != -1)
 		return;												// already waiting to clear things
@@ -240,12 +240,12 @@ void SymotesView::newStreams()
 	m_activeAudioSlot = -1;
 }
 
-void SymotesView::newWindowLayout()
+void SyntroView::newWindowLayout()
 {
 	layoutGrid(m_client->streamSources());
 }
 
-void SymotesView::layoutGrid(QStringList sourceList)
+void SyntroView::layoutGrid(QStringList sourceList)
 {
 	int rows;
 
@@ -292,7 +292,7 @@ void SymotesView::layoutGrid(QStringList sourceList)
 		m_grid->setColumnStretch(i, 1);
 }
 
-void SymotesView::deleteGrid()
+void SyntroView::deleteGrid()
 {
 	ImageWindow *iw;
 
@@ -307,14 +307,14 @@ void SymotesView::deleteGrid()
 }
 
 
-void SymotesView::initStatusBar()
+void SyntroView::initStatusBar()
 {
 	m_controlStatus = new QLabel(this);
 	m_controlStatus->setAlignment(Qt::AlignLeft);
 	ui.statusBar->addWidget(m_controlStatus, 1);
 }
 
-void SymotesView::initMenus()
+void SyntroView::initMenus()
 {
 	connect(ui.actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 	connect(ui.actionBasicSetup, SIGNAL(triggered()), this, SLOT(onBasicSetup()));
@@ -331,7 +331,7 @@ void SymotesView::initMenus()
 	ui.actionShow_time->setChecked(m_showTime);
 }
 
-void SymotesView::saveWindowState()
+void SyntroView::saveWindowState()
 {
 	QSettings *settings = SyntroUtils::getSettings();
 
@@ -347,7 +347,7 @@ void SymotesView::saveWindowState()
 	delete settings;
 }
 
-void SymotesView::restoreWindowState()
+void SyntroView::restoreWindowState()
 {
 	QSettings *settings = SyntroUtils::getSettings();
 
@@ -380,19 +380,19 @@ void SymotesView::restoreWindowState()
 	delete settings;
 }
 
-void SymotesView::onAbout()
+void SyntroView::onAbout()
 {
 	SyntroAbout *dlg = new SyntroAbout();
 	dlg->show();
 }
 
-void SymotesView::onBasicSetup()
+void SyntroView::onBasicSetup()
 {
 	BasicSetupDlg *dlg = new BasicSetupDlg(this);
 	dlg->show();
 }
 
-void SymotesView::onSelectStreams()
+void SyntroView::onSelectStreams()
 {
 	SelectStreamsDlg *dlg = new SelectStreamsDlg(this);
 	connect(dlg, SIGNAL(newStreams()), this, SLOT(newStreams()), Qt::QueuedConnection);
@@ -400,7 +400,7 @@ void SymotesView::onSelectStreams()
 }
 
 
-void SymotesView::newImage(int slot, QImage image, qint64 timestamp)
+void SyntroView::newImage(int slot, QImage image, qint64 timestamp)
 {
     if (slot < 0 || slot >= m_windowList.count())
         return;
@@ -411,7 +411,7 @@ void SymotesView::newImage(int slot, QImage image, qint64 timestamp)
         m_singleCamera->newImage(image);
 }
 
-void SymotesView::newAudioSamples(int slot, QByteArray dataArray, qint64 /*timestamp*/, 
+void SyntroView::newAudioSamples(int slot, QByteArray dataArray, qint64 /*timestamp*/, 
 	int rate, int channels, int size)
 {
     if (slot != m_activeAudioSlot)
@@ -430,7 +430,7 @@ void SymotesView::newAudioSamples(int slot, QByteArray dataArray, qint64 /*times
 }
 
 #ifndef Q_OS_UNIX
-bool SymotesView::audioOutOpen(int rate, int channels, int size)
+bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {
 /*    foreach (const QAudioDeviceInfo& deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
         qDebug() << "Device name: " << deviceInfo.deviceName();
@@ -470,7 +470,7 @@ bool SymotesView::audioOutOpen(int rate, int channels, int size)
 	return true;
 }
 
-bool SymotesView::audioOutWrite(const QByteArray& audioData)
+bool SyntroView::audioOutWrite(const QByteArray& audioData)
 {
 	if (m_audioOutDevice == NULL)
 		return false;
@@ -478,14 +478,14 @@ bool SymotesView::audioOutWrite(const QByteArray& audioData)
 	return m_audioOutDevice->write(audioData) == audioData.length();
 }
 
-void SymotesView::handleAudioOutStateChanged(QAudio::State /* state */)
+void SyntroView::handleAudioOutStateChanged(QAudio::State /* state */)
 {
 //	qDebug() << "Audio state " << state;
 }
 
 #else
 
-bool SymotesView::audioOutOpen(int rate, int channels, int size)
+bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {
     int err;
     snd_pcm_hw_params_t *params;
@@ -553,7 +553,7 @@ openError:
     return false;
 }
 
-bool SymotesView::audioOutWrite(const QByteArray& audioData)
+bool SyntroView::audioOutWrite(const QByteArray& audioData)
 {
     int writtenLength;
     int samples = audioData.length() / m_audioOutSampleSize;

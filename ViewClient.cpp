@@ -1,27 +1,27 @@
 //
-//  Copyright (c) 2013 symotes, LLC.
+//  Copyright (c) 2012, 2013 Pansenti, LLC.
+//	
+//  This file is part of Syntro
 //
-//  This file is part of symotesview.
-//
-//  symotesview is free software: you can redistribute it and/or modify
+//  Syntro is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
 //
-//  symotesview is distributed in the hope that it will be useful,
+//  Syntro is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with symotesview.  If not, see <http://www.gnu.org/licenses/>.
+//  along with Syntro.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "SymotesView.h"
+#include "SyntroView.h"
 #include "ViewClient.h"
 #include "AVMuxDecode.h"
 
-ViewClient::ViewClient(SymotesView *parent)
+ViewClient::ViewClient(SyntroView *parent)
     : Endpoint(VIEWCLIENT_BACKGROUND_INTERVAL, "ViewClient")
 {
     m_parent = parent;

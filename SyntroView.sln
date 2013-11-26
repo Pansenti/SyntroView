@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SymotesView", "SymotesView.vcxproj", "{33DDC43F-741F-4455-AF77-DDC69C43C916}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SyntroView", "SyntroView.vcxproj", "{33DDC43F-741F-4455-AF77-DDC69C43C916}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

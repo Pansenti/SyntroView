@@ -1,26 +1,25 @@
 //
-//  Copyright (c) 2013 symotes, LLC.
+//  Copyright (c) 2012, 2013 Pansenti, LLC.
+//	
+//  This file is part of Syntro
 //
-//  This file is part of symotesview.
-//
-//  symotesview is free software: you can redistribute it and/or modify
+//  Syntro is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
 //  the Free Software Foundation, either version 3 of the License, or
 //  (at your option) any later version.
 //
-//  symotesview is distributed in the hope that it will be useful,
+//  Syntro is distributed in the hope that it will be useful,
 //  but WITHOUT ANY WARRANTY; without even the implied warranty of
 //  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 //  GNU General Public License for more details.
 //
 //  You should have received a copy of the GNU General Public License
-//  along with symotesview.  If not, see <http://www.gnu.org/licenses/>.
+//  along with Syntro.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 
 #include "ViewSingleCamera.h"
 
-#define	SPACESVIEW_CAMERA_DEADTIME		(10 * SYNTRO_CLOCKS_PER_SEC)
+#define	SYNTROVIEW_CAMERA_DEADTIME		(10 * SYNTRO_CLOCKS_PER_SEC)
 
 ViewSingleCamera::ViewSingleCamera(QWidget *parent, QString sourceName)
 	: QDialog(parent, Qt::WindowCloseButtonHint | Qt::WindowTitleHint)
@@ -32,7 +31,7 @@ ViewSingleCamera::ViewSingleCamera(QWidget *parent, QString sourceName)
 	restoreWindowState();
 	setWindowTitle(sourceName);
 
-	m_timeoutTimer = startTimer(SPACESVIEW_CAMERA_DEADTIME);
+	m_timeoutTimer = startTimer(SYNTROVIEW_CAMERA_DEADTIME);
 }
 
 void ViewSingleCamera::setSourceName(QString sourceName)
@@ -59,7 +58,7 @@ void ViewSingleCamera::newImage(QImage image)
 
 void ViewSingleCamera::timerEvent(QTimerEvent * /*event*/)
 {
-	if (SyntroUtils::syntroTimerExpired(SyntroClock(), m_lastFrame, SPACESVIEW_CAMERA_DEADTIME)) {
+	if (SyntroUtils::syntroTimerExpired(SyntroClock(), m_lastFrame, SYNTROVIEW_CAMERA_DEADTIME)) {
 		ui.cameraView->setText("No Image");
 	}
 }
