@@ -31,10 +31,12 @@
 #include "ImageWindow.h"
 #include "ViewSingleCamera.h"
 
+#ifndef Q_OS_MAC
 #ifdef Q_OS_UNIX
 #include <alsa/asoundlib.h>
 #else
 #include <QAudioOutput>
+#endif
 #endif
 
 class SyntroView : public QMainWindow
@@ -100,6 +102,7 @@ private:
 
 	int m_enableServicesTimer;
 
+#ifndef Q_OS_MAC
 #ifndef Q_OS_UNIX
 	QAudioOutput *m_audioOut;
 	QIODevice *m_audioOutDevice;
@@ -107,7 +110,7 @@ private:
     snd_pcm_t *m_audioOutHandle;
     bool m_audioOutIsOpen;
     int m_audioOutSampleSize;
-
+#endif
 #endif
 
 	bool audioOutOpen(int rate, int channels, int size);

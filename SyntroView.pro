@@ -17,9 +17,12 @@ CONFIG += debug_and_release
 
 unix {
 	CONFIG += link_pkgconfig
-	macx:CONFIG -= app_bundle
-	PKGCONFIG += syntro
+	macx {
+		CONFIG -= app_bundle
+	} else {
         LIBS += -lasound
+	}
+	PKGCONFIG += syntro
 }
 
 DEFINES += QT_NETWORK_LIB

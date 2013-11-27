@@ -39,11 +39,13 @@ SyntroView::SyntroView()
 	m_audioChannels = -1;
     m_activeAudioSlot = -1;
 
+#ifndef Q_OS_MAC
 #ifndef Q_OS_UNIX
 	m_audioOut = NULL;
 	m_audioOutDevice = NULL;
 #else
     m_audioOutIsOpen = false;
+#endif
 #endif
 
 	m_displayStats = new DisplayStats(this, true, false);
@@ -487,6 +489,7 @@ void SyntroView::handleAudioOutStateChanged(QAudio::State /* state */)
 
 bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {
+#ifndef Q_OS_MAC
     int err;
     snd_pcm_hw_params_t *params;
 
@@ -550,11 +553,13 @@ openError:
     if (params != NULL)
         snd_pcm_hw_params_free(params);
     m_audioOutIsOpen = false;
+#endif
     return false;
 }
 
 bool SyntroView::audioOutWrite(const QByteArray& audioData)
 {
+#ifndef Q_OS_MAC
     int writtenLength;
     int samples = audioData.length() / m_audioOutSampleSize;
 
@@ -563,5 +568,8 @@ bool SyntroView::audioOutWrite(const QByteArray& audioData)
         snd_pcm_prepare(m_audioOutHandle);
     }
     return writtenLength == samples;
+#else
+	return 0;
+#endif
 }
 #endif
