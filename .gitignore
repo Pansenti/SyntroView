@@ -1,4 +1,5 @@
 Makefile*
+*.opensdf
 debug/
 Debug/
 Release/
