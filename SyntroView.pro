@@ -8,8 +8,6 @@ else {
 	DESTDIR = Output 
 }
 
-include(version.pri)
-
 QT += core gui network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -20,7 +18,9 @@ unix {
 	macx {
 		CONFIG -= app_bundle
 	} else {
-        LIBS += -lasound
+		LIBS += -lasound
+		target.path = /usr/bin
+		INSTALLS += target
 	}
 	PKGCONFIG += syntro
 }
