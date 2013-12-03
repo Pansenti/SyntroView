@@ -17,11 +17,13 @@
 //  along with Syntro.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <qcolordialog.h>
+
 #include "SyntroView.h"
 #include "SyntroAboutDlg.h"
 #include "BasicSetupDlg.h"
 #include "SelectStreamsDlg.h"
-#include <qcolordialog.h>
+#include "streamdialog.h"
 
 #define GRID_SPACING 3
 
@@ -75,9 +77,16 @@ SyntroView::SyntroView()
     connect(m_client, SIGNAL(newWindowLayout()),
             this, SLOT(newWindowLayout()), Qt::QueuedConnection);
 
+	connect(m_client, SIGNAL(dirResponse(QStringList)), 
+			this, SLOT(directoryResponse(QStringList)));
+
+	connect(this, SIGNAL(requestDirectory()), 
+			m_client, SLOT(requestDir()));
+
 	m_client->resumeThread();
 
 	m_statusTimer = startTimer(2000);
+	m_directoryTimer = startTimer(10000);
 
 	restoreWindowState();
 	initStatusBar();
@@ -114,6 +123,7 @@ void SyntroView::onStats()
 void SyntroView::closeEvent(QCloseEvent *)
 {
  	killTimer(m_statusTimer);
+	killTimer(m_directoryTimer);
 
 	disconnect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
@@ -161,11 +171,19 @@ void SyntroView::timerEvent(QTimerEvent *event)
 		emit addStreams();
 		killTimer(m_enableServicesTimer);
 		m_enableServicesTimer = -1;
-	} else {
+	}
+	else if (event->timerId() == m_directoryTimer) {
+		 emit requestDirectory();
+	}
+	else {
 		m_controlStatus->setText(m_client->getLinkState());
 	}
 }
 
+void SyntroView::directoryResponse(QStringList directory)
+{
+	m_streamDirectory = directory;
+}
 
 void SyntroView::singleCameraClosed()
 {
@@ -260,9 +278,12 @@ void SyntroView::newStreams()
 {
 	if (m_enableServicesTimer != -1)
 		return;												// already waiting to clear things
+
 	deleteGrid();
+
 	emit deleteStreams();
 	emit deleteAllServices();
+
 	m_enableServicesTimer = startTimer(500);				// give Endpoint time to clear up - finish off in timer event
 	m_activeAudioSlot = -1;
 }
@@ -346,6 +367,7 @@ void SyntroView::initMenus()
 	connect(ui.actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 	connect(ui.actionBasicSetup, SIGNAL(triggered()), this, SLOT(onBasicSetup()));
 	connect(ui.actionSelectStreams, SIGNAL(triggered()), this, SLOT(onSelectStreams()));
+	connect(ui.actionVideoFeeds, SIGNAL(triggered()), this, SLOT(onVideoFeeds()));
 
 	connect(ui.onStats, SIGNAL(triggered()), this, SLOT(onStats()));
 	connect(ui.actionShow_name, SIGNAL(triggered()), this, SLOT(onShowName()));
@@ -426,6 +448,17 @@ void SyntroView::onSelectStreams()
 	dlg->show();
 }
 
+void SyntroView::onVideoFeeds()
+{
+	QStringList currentStreams;
+
+	StreamDialog dlg(this, m_streamDirectory, currentStreams);
+
+	if (dlg.exec() == QDialog::Accepted) {
+		currentStreams = dlg.newStreams();
+		QMessageBox::information(this, "Stream config change", currentStreams.join('\n'));
+	}	
+}
 
 void SyntroView::newImage(int slot, QImage image, qint64 timestamp)
 {

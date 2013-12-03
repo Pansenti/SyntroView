@@ -20,7 +20,7 @@
      <x>0</x>
      <y>0</y>
      <width>535</width>
-     <height>20</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuActions">
@@ -36,6 +36,7 @@
      <string>Settings</string>
     </property>
     <addaction name="actionSelectStreams"/>
+    <addaction name="actionVideoFeeds"/>
     <addaction name="actionShow_name"/>
     <addaction name="actionShow_date"/>
     <addaction name="actionShow_time"/>
@@ -121,6 +122,11 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionVideoFeeds">
+   <property name="text">
+    <string>Video feeds ...</string>
    </property>
   </action>
  </widget>

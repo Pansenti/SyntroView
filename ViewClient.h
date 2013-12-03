@@ -40,18 +40,20 @@ public:
 public slots:
 	void deleteStreams();
 	void addStreams();
+	void requestDir();
 
 signals:
     void newAVData(int slot, QByteArray avmuxArray);
 	void newWindowLayout();
 	void receiveData(int slot, int bytes);
 	void setServiceName(int slot, QString name);
+	void dirResponse(QStringList directory);
 
 protected:
     void appClientInit();
     void appClientExit();
     void appClientReceiveMulticast(int servicePort, SYNTRO_EHEAD *multiCast, int len);
-    void appClientReceiveDirectory(QStringList /*dirList*/) {}
+    void appClientReceiveDirectory(QStringList);
 
 private:
 	void loadStreamSources(QString group, QString src);

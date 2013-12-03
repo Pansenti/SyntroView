@@ -42,6 +42,16 @@ void ViewClient::appClientExit()
     deleteStreams();
 }
 
+void ViewClient::appClientReceiveDirectory(QStringList directory)
+{
+	emit dirResponse(directory);
+}
+
+void ViewClient::requestDir()
+{
+	requestDirectory();
+}
+
 void ViewClient::appClientReceiveMulticast(int servicePort, SYNTRO_EHEAD *multiCast, int len)
 {
 	int slot;

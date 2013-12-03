@@ -65,6 +65,9 @@
     <CustomBuild Include="SyntroView.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="streamdialog.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_DisplayStats.h">
@@ -149,6 +152,15 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ViewSingleCamera.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_streamdialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_streamdialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="streamdialog.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

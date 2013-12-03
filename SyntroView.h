@@ -52,6 +52,7 @@ public slots:
 	void onAbout();
 	void onBasicSetup();
 	void onSelectStreams();
+	void onVideoFeeds();
     void onShowName();
 	void onShowDate();
 	void onShowTime();
@@ -61,6 +62,7 @@ public slots:
 	void singleCameraClosed();
 	void newStreams();
 	void newWindowLayout();
+	void directoryResponse(QStringList directory);
 
     void newImage(int slot, QImage image, qint64 timestamp);
     void newAudioSamples(int slot, QByteArray dataArray, qint64 timestamp, int rate, int channels, int size);
@@ -73,6 +75,7 @@ signals:
 	void deleteAllServices();
 	void deleteStreams();
 	void addStreams();
+	void requestDirectory();
 
 protected:
 	void closeEvent(QCloseEvent *event);
@@ -91,11 +94,13 @@ private:
 
 	SyntroServer *m_controlServer;
 	ViewClient *m_client;
+	QStringList m_streamDirectory;
 	QGridLayout *m_grid;
 	QList<ImageWindow *> m_windowList;
 	DisplayStats *m_displayStats;
 	QLabel *m_controlStatus;
 	int m_statusTimer;
+	int m_directoryTimer;
 	bool m_showName;
 	bool m_showDate;
 	bool m_showTime;
