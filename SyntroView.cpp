@@ -465,7 +465,7 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 		m_audioOutDevice = NULL;
 	}
     m_audioOut = new QAudioOutput(format, this);
-    m_audioOut->setBufferSize(rate * channels * (size / 8));
+    m_audioOut->setBufferSize(rate * channels * (size / 8) / 10);
 //    qDebug() << "Buffer size: " << m_audioOut->bufferSize();
     connect(m_audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleAudioOutStateChanged(QAudio::State)));
 	m_audioOutDevice = m_audioOut->start();
