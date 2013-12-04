@@ -36,15 +36,23 @@ public:
 	
 	QStringList newStreams();
 
+public slots:
+	void onAddStreams();
+	void onRemoveStreams();
+
 private:
 	void layoutWindow();
 	void parseAvailableServices(QStringList directory);
 
-	QStringList m_availableStreams;
 	QStringList m_currentStreams;
+	QStringList m_availableStreams;
 
+	QListWidget *m_currentList;
 	QListWidget *m_availableList;
 	//bool m_wantLowResolutionFeeds;
+
+	QPushButton *m_addButton;
+	QPushButton *m_removeButton;
 
 	QPushButton *m_okButton;
 	QPushButton *m_cancelButton;

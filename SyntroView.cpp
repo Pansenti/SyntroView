@@ -286,6 +286,21 @@ void SyntroView::onTextColor()
 		m_windowList[i]->setTextColor(m_textColor);
 }
 
+void SyntroView::onVideoFeeds()
+{
+	QStringList currentStreams;
+
+	for (int i = 0; i < m_avSources.count(); i++)
+		currentStreams.append(m_avSources.at(i)->name());
+
+	StreamDialog dlg(this, m_clientDirectory, currentStreams);
+
+	if (dlg.exec() == QDialog::Accepted) {
+		currentStreams = dlg.newStreams();
+		QMessageBox::information(this, "Stream config change", currentStreams.join('\n'));
+	}	
+}
+
 bool SyntroView::addAVSource(QString name)
 {
 	AVSource *avSource = new AVSource(name);
@@ -509,37 +524,8 @@ void SyntroView::onBasicSetup()
 	BasicSetupDlg *dlg = new BasicSetupDlg(this);
 	dlg->show();
 }
+
 /*
-void SyntroView::onSelectStreams()
-{
-	SelectStreamsDlg *dlg = new SelectStreamsDlg(this);
-	connect(dlg, SIGNAL(newStreams()), this, SLOT(newStreams()), Qt::QueuedConnection);
-	dlg->show();
-}
-*/
-void SyntroView::onVideoFeeds()
-{
-	QStringList currentStreams;
-
-	StreamDialog dlg(this, m_clientDirectory, currentStreams);
-
-	if (dlg.exec() == QDialog::Accepted) {
-		currentStreams = dlg.newStreams();
-		QMessageBox::information(this, "Stream config change", currentStreams.join('\n'));
-	}	
-}
-/*
-void SyntroView::newImage(int slot, QImage image, qint64 timestamp)
-{
-    if (slot < 0 || slot >= m_windowList.count())
-        return;
-
-    m_windowList[slot]->newImage(image, timestamp);
-
-    if (m_singleCameraId == slot)
-        m_singleCamera->newImage(image);
-}
-
 void SyntroView::newAudioSamples(int slot, QByteArray dataArray, qint64, 
 	int rate, int channels, int size)
 {

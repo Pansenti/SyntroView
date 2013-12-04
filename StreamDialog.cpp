@@ -37,6 +37,9 @@ StreamDialog::StreamDialog(QWidget *parent, QStringList directory, QStringList c
 
 	layoutWindow();
 
+	connect(m_addButton, SIGNAL(clicked()), this, SLOT(onAddStreams()));
+	connect(m_removeButton, SIGNAL(clicked()), this, SLOT(onRemoveStreams()));
+
 	connect(m_okButton, SIGNAL(clicked()), this, SLOT(accept()));
 	connect(m_cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
@@ -71,35 +74,104 @@ QStringList StreamDialog::newStreams()
 {
 	QStringList list;
 
-	QList<QListWidgetItem *> items = m_availableList->selectedItems();
-	
-	for (int i = 0; i < items.count(); i++)
-		list << items.at(i)->text();
+	for (int i = 0; i < m_currentList->count(); i++) 
+		list << m_currentList->item(i)->text();
 
 	return list;
+}
+
+void StreamDialog::onAddStreams()
+{
+	QList<QListWidgetItem *> selection = m_availableList->selectedItems();
+
+	for (int i = 0; i < selection.count(); i++)
+		m_currentList->addItem(new QListWidgetItem(selection.at(i)->text()));
+
+	for (int i = m_availableList->count() - 1; i > -1; i--) {
+		if (m_availableList->item(i)->isSelected()) {
+			QListWidgetItem *item = m_availableList->takeItem(i);
+
+			if (item)
+				delete item;
+		}
+	}
+}
+
+void StreamDialog::onRemoveStreams()
+{
+	QList<QListWidgetItem *> selection = m_currentList->selectedItems();
+
+	for (int i = 0; i < selection.count(); i++)
+		m_availableList->addItem(new QListWidgetItem(selection.at(i)->text()));
+
+	for (int i = m_currentList->count() - 1; i > -1; i--) {
+		if (m_currentList->item(i)->isSelected()) {
+			QListWidgetItem *item = m_currentList->takeItem(i);
+
+			if (item)
+				delete item;
+		}
+	}
 }
 
 void StreamDialog::layoutWindow()
 {
 	QVBoxLayout *vLayout = new QVBoxLayout();
+	QHBoxLayout *hLayout = new QHBoxLayout();
 
-	QVBoxLayout *streamLayout = new QVBoxLayout;
+
+	// current list
+	QVBoxLayout *currentLayout = new QVBoxLayout;
+
+	m_currentList = new QListWidget();
+	m_currentList->setSelectionMode(QAbstractItemView::MultiSelection);
+	m_currentList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	m_currentList->setMaximumWidth(160);
+	
+	for (int i = 0; i < m_currentStreams.count(); i++)
+		m_currentList->addItem(new QListWidgetItem(m_currentStreams.at(i)));
+
+	currentLayout->addStretch();	
+	currentLayout->addWidget(new QLabel("Current Feeds"));
+	currentLayout->addWidget(m_currentList, 1);
+	currentLayout->addStretch();
+
+	hLayout->addLayout(currentLayout);
+
+	// add remove buttons
+	QVBoxLayout *addRemoveLayout = new QVBoxLayout;
+
+	m_addButton = new QPushButton("Add");
+	m_removeButton = new QPushButton("Remove");
+	
+	addRemoveLayout->addStretch();
+	addRemoveLayout->addWidget(m_addButton);
+	addRemoveLayout->addWidget(m_removeButton);
+	addRemoveLayout->addStretch();
+
+	hLayout->addLayout(addRemoveLayout);
+
+	// available list
+	QVBoxLayout *availableLayout = new QVBoxLayout;
 
 	m_availableList = new QListWidget();
 	m_availableList->setSelectionMode(QAbstractItemView::MultiSelection);
 	m_availableList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	m_availableList->setMaximumWidth(160);
 
 	m_availableStreams.sort();
 
 	for (int i = 0; i < m_availableStreams.count(); i++)
 		m_availableList->addItem(new QListWidgetItem(m_availableStreams.at(i)));
 
-	streamLayout->addStretch();	
-	streamLayout->addWidget(new QLabel("Available Feeds"));
-	streamLayout->addWidget(m_availableList, 1);
-	streamLayout->addStretch();
+	availableLayout->addStretch();	
+	availableLayout->addWidget(new QLabel("Available Feeds"));
+	availableLayout->addWidget(m_availableList, 1);
+	availableLayout->addStretch();
 
-	vLayout->addLayout(streamLayout, 1);
+	hLayout->addLayout(availableLayout);
+
+	vLayout->addLayout(hLayout, 1);
 	vLayout->addStretch();
 
 	QHBoxLayout *buttonLayout = new QHBoxLayout();
