@@ -51,6 +51,7 @@ SyntroView::SyntroView()
 	m_displayStats = new DisplayStats(this, true, false);
 
 	SyntroUtils::syntroAppInit();
+	startControlServer();
 
 	m_client = new ViewClient(this);
 
@@ -89,6 +90,21 @@ SyntroView::SyntroView()
 	m_enableServicesTimer = -1;
 }
 
+void SyntroView::startControlServer()
+{
+	QSettings *settings = SyntroUtils::getSettings();
+
+	if (settings->value(SYNTRO_PARAMS_LOCALCONTROL).toBool()) {
+		m_controlServer = new SyntroServer();
+		m_controlServer->resumeThread();
+	} 
+	else {
+		m_controlServer = NULL;
+	}
+
+	delete settings;
+}
+
 void SyntroView::onStats()
 {
 	m_displayStats->activateWindow();
@@ -124,7 +140,16 @@ void SyntroView::closeEvent(QCloseEvent *)
 		m_singleCamera->close();
 	}
 
-	m_client->exitThread(); 
+	if (m_client) {
+		m_client->exitThread(); 
+		m_client = NULL;
+	}
+
+	if (m_controlServer) {
+		m_controlServer->exitThread();
+		m_controlServer = NULL;
+	}
+
 	saveWindowState();
 
 	SyntroUtils::syntroAppExit();

@@ -26,6 +26,7 @@
 
 #include "ui_SyntroView.h"
 #include "SyntroLib.h"
+#include "SyntroServer.h"
 #include "DisplayStats.h"
 #include "ViewClient.h"
 #include "ImageWindow.h"
@@ -84,9 +85,11 @@ private:
 	void initMenus();
 	void saveWindowState();
 	void restoreWindowState();
+	void startControlServer();
 
 	Ui::SyntroViewClass ui;
 
+	SyntroServer *m_controlServer;
 	ViewClient *m_client;
 	QGridLayout *m_grid;
 	QList<ImageWindow *> m_windowList;
