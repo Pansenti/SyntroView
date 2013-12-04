@@ -65,7 +65,10 @@
     <CustomBuild Include="SyntroView.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="streamdialog.h">
+    <CustomBuild Include="StreamDialog.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="AVSource.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>
@@ -153,13 +156,22 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ViewSingleCamera.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_streamdialog.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_StreamDialog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_streamdialog.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_StreamDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="streamdialog.cpp">
+    <ClCompile Include="StreamDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AVSource.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AVSource.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="AVSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
