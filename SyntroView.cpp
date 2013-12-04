@@ -22,7 +22,6 @@
 #include "SyntroView.h"
 #include "SyntroAboutDlg.h"
 #include "BasicSetupDlg.h"
-#include "SelectStreamsDlg.h"
 #include "streamdialog.h"
 
 #define GRID_SPACING 3
@@ -33,7 +32,7 @@ SyntroView::SyntroView()
     m_logTag = "SyntroView";
 	ui.setupUi(this);
 
-	m_singleCameraId = -1;
+	m_grid = NULL;
 	m_singleCamera = NULL;
 
 	m_audioSize = -1;
@@ -42,46 +41,39 @@ SyntroView::SyntroView()
     m_activeAudioSlot = -1;
 
 #ifndef Q_OS_MAC
-#ifndef Q_OS_UNIX
-	m_audioOut = NULL;
-	m_audioOutDevice = NULL;
-#else
-    m_audioOutIsOpen = false;
-#endif
+	#ifndef Q_OS_UNIX
+		m_audioOut = NULL;
+		m_audioOutDevice = NULL;
+	#else
+		m_audioOutIsOpen = false;
+	#endif
 #endif
 
 	m_displayStats = new DisplayStats(this, true, false);
 
 	SyntroUtils::syntroAppInit();
+
 	startControlServer();
 
-	m_client = new ViewClient(this);
+	m_client = new ViewClient();
 
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
-
+/*
     connect(m_client, SIGNAL(setServiceName(int, QString)),
             m_displayStats, SLOT(setServiceName(int, QString)), Qt::QueuedConnection);
 
     connect(m_client, SIGNAL(receiveData(int, int)),
             m_displayStats, SLOT(receiveData(int, int)), Qt::DirectConnection);
+*/
 
-    connect(this, SIGNAL(deleteAllServices()),
-            m_displayStats, SLOT(deleteAllServices()), Qt::QueuedConnection);
+	connect(m_client, SIGNAL(clientConnected()), this, SLOT(clientConnected()));
+	connect(m_client, SIGNAL(clientClosed()), this, SLOT(clientClosed()));
 
-    connect(this, SIGNAL(deleteStreams()),
-            m_client, SLOT(deleteStreams()), Qt::QueuedConnection);
+	connect(m_client, SIGNAL(dirResponse(QStringList)), this, SLOT(dirResponse(QStringList)));
+	connect(this, SIGNAL(requestDir()), m_client, SLOT(requestDir()));
 
-    connect(this, SIGNAL(addStreams()),
-            m_client, SLOT(addStreams()), Qt::QueuedConnection);
-
-    connect(m_client, SIGNAL(newWindowLayout()),
-            this, SLOT(newWindowLayout()), Qt::QueuedConnection);
-
-	connect(m_client, SIGNAL(dirResponse(QStringList)), 
-			this, SLOT(directoryResponse(QStringList)));
-
-	connect(this, SIGNAL(requestDirectory()), 
-			m_client, SLOT(requestDir()));
+	connect(this, SIGNAL(enableService(AVSource *)), m_client, SLOT(enableService(AVSource *)));
+	connect(this, SIGNAL(disableService(int)), m_client, SLOT(disableService(int)));
 
 	m_client->resumeThread();
 
@@ -91,12 +83,11 @@ SyntroView::SyntroView()
 	restoreWindowState();
 	initStatusBar();
 	initMenus();
+	layoutGrid();
 
 	setWindowTitle(QString("%1 - %2")
 		.arg(SyntroUtils::getAppType())
 		.arg(SyntroUtils::getAppName()));
-
-	m_enableServicesTimer = -1;
 }
 
 void SyntroView::startControlServer()
@@ -125,25 +116,13 @@ void SyntroView::closeEvent(QCloseEvent *)
  	killTimer(m_statusTimer);
 	killTimer(m_directoryTimer);
 
-	disconnect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
-
+/*
     disconnect(m_client, SIGNAL(setServiceName(int, QString)),
             m_displayStats, SLOT(setServiceName(int, QString)));
 
     disconnect(m_client, SIGNAL(receiveData(int, int)),
             m_displayStats, SLOT(receiveData(int, int)));
-
-    disconnect(this, SIGNAL(deleteAllServices()),
-            m_displayStats, SLOT(deleteAllServices()));
-
-    disconnect(this, SIGNAL(deleteStreams()),
-            m_client, SLOT(deleteStreams()));
-
-    disconnect(this, SIGNAL(addStreams()),
-            m_client, SLOT(addStreams()));
-
-    disconnect(m_client, SIGNAL(newWindowLayout()),
-            this, SLOT(newWindowLayout()));
+*/
 
 	if (m_singleCamera) {
 		disconnect(m_singleCamera, SIGNAL(closed()), this, SLOT(singleCameraClosed()));
@@ -167,22 +146,40 @@ void SyntroView::closeEvent(QCloseEvent *)
 
 void SyntroView::timerEvent(QTimerEvent *event)
 {
-	if (event->timerId() == m_enableServicesTimer) {
-		emit addStreams();
-		killTimer(m_enableServicesTimer);
-		m_enableServicesTimer = -1;
-	}
-	else if (event->timerId() == m_directoryTimer) {
-		 emit requestDirectory();
+	if (event->timerId() == m_directoryTimer) {
+		 emit requestDir();
+
+		while (m_delayedDeleteList.count() > 0) {
+			qint64 lastUpdate = m_delayedDeleteList.at(0)->lastUpdate();
+
+			if (!SyntroUtils::syntroTimerExpired(SyntroClock(), lastUpdate, 5 * SYNTRO_CLOCKS_PER_SEC))
+				break;
+				
+			AVSource *avSource = m_delayedDeleteList.at(0);
+	
+			m_delayedDeleteList.removeAt(0);
+	
+			delete avSource;
+		}
 	}
 	else {
 		m_controlStatus->setText(m_client->getLinkState());
 	}
 }
 
-void SyntroView::directoryResponse(QStringList directory)
+void SyntroView::clientConnected()
 {
-	m_streamDirectory = directory;
+	ui.actionVideoFeeds->setEnabled(true);
+}
+
+void SyntroView::clientClosed()
+{
+	ui.actionVideoFeeds->setEnabled(false);
+}
+
+void SyntroView::dirResponse(QStringList directory)
+{
+	m_clientDirectory = directory;
 }
 
 void SyntroView::singleCameraClosed()
@@ -190,56 +187,71 @@ void SyntroView::singleCameraClosed()
 	if (m_singleCamera) {
 		delete m_singleCamera;
 
-		m_windowList[m_singleCameraId]->setSelected(false);
+		//m_windowList[m_singleCameraId]->setSelected(false);
 		m_singleCamera = NULL;
-		m_singleCameraId = -1;
+		//m_singleCameraId = -1;
 		m_activeAudioSlot = -1;
 	}
 }
 
-void SyntroView::imageMousePress(int id)
+void SyntroView::imageMousePress(QString name)
 {
+/*
 	if ((id == m_activeAudioSlot) && (m_singleCameraId < 0)) {
 		m_windowList[id]->setSelected(false);
 		m_activeAudioSlot = -1;
 		return;
 	}
     m_activeAudioSlot = id;
-    for (int i = 0; i < m_windowList.count(); i++)
-        m_windowList[i]->setSelected(i == id);
+*/
+	int index = -1;
 
-	if (m_singleCameraId < 0)
+    for (int i = 0; i < m_windowList.count(); i++) {
+		if (m_avSources.at(i)->name() == name) {
+			index = i;
+			m_windowList[i]->setSelected(true);
+		}
+		else {
+			m_windowList[i]->setSelected(false);
+		}
+	}
+
+	if (!m_singleCamera)
 		return;
 
-	m_singleCameraId = id;
-
-	m_singleCamera->setSourceName(m_windowList[id]->sourceName());
-
-	m_singleCamera->newImage(m_windowList[id]->m_image);
+	m_singleCamera->setSource(m_avSources[index]);
 }
 
-void SyntroView::imageDoubleClick(int id)
+void SyntroView::imageDoubleClick(QString name)
 {
-	if (m_singleCameraId >= 0)
+	// mousePress handles this
+	if (m_singleCamera)
 		return;
 
-	if (!m_singleCamera) {
-		m_singleCamera = new ViewSingleCamera(NULL, m_windowList[id]->sourceName());
+	int index = -1;
 
-		if (!m_singleCamera)
-			return;
-
-		connect(m_singleCamera, SIGNAL(closed()), this, SLOT(singleCameraClosed()));
-		m_singleCamera->show();
-	}
-	else {
-		m_singleCamera->setSourceName(m_windowList[id]->sourceName());
+    for (int i = 0; i < m_windowList.count(); i++) {
+		if (m_avSources.at(i)->name() == name) {
+			index = i;
+			break;
+		}
 	}
 
-	m_singleCameraId = id;
-	m_windowList[id]->setSelected(true);
-    m_activeAudioSlot = id;
-	m_singleCamera->newImage(m_windowList[id]->m_image);
+	if (index == -1)
+		return;
+
+	m_singleCamera = new ViewSingleCamera(NULL, m_avSources[index]);
+
+	if (!m_singleCamera)
+		return;
+
+	connect(m_singleCamera, SIGNAL(closed()), this, SLOT(singleCameraClosed()));
+	m_singleCamera->show();
+
+	//m_singleCameraId = id;
+	m_windowList[index]->setSelected(true);
+
+    //m_activeAudioSlot = id;
 }
 
 void SyntroView::onShowName()
@@ -274,62 +286,104 @@ void SyntroView::onTextColor()
 		m_windowList[i]->setTextColor(m_textColor);
 }
 
-void SyntroView::newStreams()
+bool SyntroView::addAVSource(QString name)
 {
-	if (m_enableServicesTimer != -1)
-		return;												// already waiting to clear things
+	AVSource *avSource = new AVSource(name);
 
-	deleteGrid();
+	if (!avSource)
+		return false;
 
-	emit deleteStreams();
-	emit deleteAllServices();
+	ImageWindow *win = new ImageWindow(avSource, m_showName, m_showDate, m_showTime, m_textColor, this);
 
-	m_enableServicesTimer = startTimer(500);				// give Endpoint time to clear up - finish off in timer event
-	m_activeAudioSlot = -1;
-}
+	if (!win) {
+		delete avSource;
+		return false;
+	}
 
-void SyntroView::newWindowLayout()
-{
-	layoutGrid(m_client->streamSources());
-}
+	connect(win, SIGNAL(imageMousePress(QString)), this, SLOT(imageMousePress(QString)));
+	connect(win, SIGNAL(imageDoubleClick(QString)), this, SLOT(imageDoubleClick(QString)));
 
-void SyntroView::layoutGrid(QStringList sourceList)
-{
-	int rows;
-
-	m_grid = new QGridLayout(ui.centralWidget);
-	m_grid->setSpacing(GRID_SPACING);
-	m_grid->setContentsMargins(2, 2, 2, 2);
-
-	int numSources = sourceList.count();
-
-	if (numSources > 30)
-		numSources = 30;
+	m_avSources.append(avSource);
+	m_windowList.append(win);
 	
-	if (numSources < 4)
+	emit enableService(avSource);
+
+	m_avSourceChanges = true;
+
+	return true;
+}
+
+void SyntroView::removeAVSource(QString name)
+{
+	for (int i = 0; i < m_avSources.count(); i++) {
+		if (m_avSources.at(i)->name() == name) {
+			AVSource *avSource = m_avSources.at(i);	
+			ImageWindow *win = m_windowList.at(i);
+
+			m_windowList.removeAt(i);
+			m_avSources.removeAt(i);
+
+			if (avSource->servicePort() >= 0) {
+				emit disableService(avSource->servicePort());
+
+				// neither of these is really necessary
+				avSource->setServicePort(-1);
+				avSource->stopBackgroundProcessing();
+
+				// we will delete 5 seconds from now
+				avSource->setLastUpdate(SyntroClock());
+				m_delayedDeleteList.append(avSource);
+			}
+
+			disconnect(win, SIGNAL(imageMousePress(QString)), this, SLOT(imageMousePress(QString)));
+			disconnect(win, SIGNAL(imageDoubleClick(QString)), this, SLOT(imageDoubleClick(QString)));
+			delete win;
+
+			m_avSourceChanges = true;
+		}
+	}	
+}
+
+void SyntroView::layoutGrid()
+{
+	int rows = 1;
+	int count = m_avSources.count();
+
+	if (m_grid) {
+		delete m_grid;
+		m_grid = NULL;
+	}
+
+	if (count == 0)
+		return;
+
+	if (count > 30)
+		count = 30;
+	
+	if (count < 3)
 		rows = 1;
-	else if (numSources < 9)
+	else if (count < 7)
 		rows = 2;
-	else if (numSources < 13)
+	else if (count < 13)
 		rows = 3;
-	else if (numSources < 23)
+	else if (count < 23)
 		rows = 4;
 	else
 		rows = 5;
 
-	int cols = (numSources / rows);
+	int cols = count / rows;
 
-	if (numSources % rows)
+	if (count % rows)
 		cols++;
 
-	for (int i = 0, id = 0; i < rows && id < numSources; i++) {
-		for (int j = 0; j < cols && id < numSources; j++) {
-			ImageWindow *iw = new ImageWindow(id, sourceList.at(id), m_showName, m_showDate, m_showTime, m_textColor);
-			m_windowList.append(iw);
-			m_grid->addWidget(iw, i, j);
-			connect(iw, SIGNAL(imageMousePress(int)), this, SLOT(imageMousePress(int)));
-			connect(iw, SIGNAL(imageDoubleClick(int)), this, SLOT(imageDoubleClick(int)));
-			id++;
+	m_grid = new QGridLayout(this);
+	m_grid->setSpacing(3);
+	m_grid->setContentsMargins(1, 1, 1, 1);
+	
+	for (int i = 0, k = 0; i < rows && k < count; i++) {
+		for (int j = 0; j < cols && k < count; j++) {
+			m_grid->addWidget(m_windowList.at(k), i, j);
+			k++;
 		}
 	}
 
@@ -338,6 +392,8 @@ void SyntroView::layoutGrid(QStringList sourceList)
 
 	for (int i = 0; i < cols; i++)
 		m_grid->setColumnStretch(i, 1);
+
+	centralWidget()->setLayout(m_grid);
 }
 
 void SyntroView::deleteGrid()
@@ -366,8 +422,9 @@ void SyntroView::initMenus()
 {
 	connect(ui.actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 	connect(ui.actionBasicSetup, SIGNAL(triggered()), this, SLOT(onBasicSetup()));
-	connect(ui.actionSelectStreams, SIGNAL(triggered()), this, SLOT(onSelectStreams()));
+
 	connect(ui.actionVideoFeeds, SIGNAL(triggered()), this, SLOT(onVideoFeeds()));
+	ui.actionVideoFeeds->setEnabled(false);
 
 	connect(ui.onStats, SIGNAL(triggered()), this, SLOT(onStats()));
 	connect(ui.actionShow_name, SIGNAL(triggered()), this, SLOT(onShowName()));
@@ -426,6 +483,18 @@ void SyntroView::restoreWindowState()
 
 	settings->endGroup();
 	
+	int count = settings->beginReadArray("streamSources");
+	
+	for (int i = 0; i < count; i++) {
+		settings->setArrayIndex(i);
+		QString name = settings->value("source", "").toString();
+
+		if (name.length() > 0)
+			addAVSource(name);
+	}
+	
+	settings->endArray();
+
 	delete settings;
 }
 
@@ -440,26 +509,26 @@ void SyntroView::onBasicSetup()
 	BasicSetupDlg *dlg = new BasicSetupDlg(this);
 	dlg->show();
 }
-
+/*
 void SyntroView::onSelectStreams()
 {
 	SelectStreamsDlg *dlg = new SelectStreamsDlg(this);
 	connect(dlg, SIGNAL(newStreams()), this, SLOT(newStreams()), Qt::QueuedConnection);
 	dlg->show();
 }
-
+*/
 void SyntroView::onVideoFeeds()
 {
 	QStringList currentStreams;
 
-	StreamDialog dlg(this, m_streamDirectory, currentStreams);
+	StreamDialog dlg(this, m_clientDirectory, currentStreams);
 
 	if (dlg.exec() == QDialog::Accepted) {
 		currentStreams = dlg.newStreams();
 		QMessageBox::information(this, "Stream config change", currentStreams.join('\n'));
 	}	
 }
-
+/*
 void SyntroView::newImage(int slot, QImage image, qint64 timestamp)
 {
     if (slot < 0 || slot >= m_windowList.count())
@@ -471,7 +540,7 @@ void SyntroView::newImage(int slot, QImage image, qint64 timestamp)
         m_singleCamera->newImage(image);
 }
 
-void SyntroView::newAudioSamples(int slot, QByteArray dataArray, qint64 /*timestamp*/, 
+void SyntroView::newAudioSamples(int slot, QByteArray dataArray, qint64, 
 	int rate, int channels, int size)
 {
     if (slot != m_activeAudioSlot)
@@ -488,7 +557,7 @@ void SyntroView::newAudioSamples(int slot, QByteArray dataArray, qint64 /*timest
 	}
 	audioOutWrite(dataArray);
 }
-
+*/
 #ifndef Q_OS_UNIX
 bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {

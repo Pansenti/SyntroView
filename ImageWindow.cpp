@@ -23,12 +23,11 @@
 #define	SPACESVIEW_CAMERA_DEADTIME		(10 * SYNTRO_CLOCKS_PER_SEC)
 
 
-ImageWindow::ImageWindow(int id, QString sourceName, bool showName, bool showDate, 
+ImageWindow::ImageWindow(AVSource *avSource, bool showName, bool showDate, 
 						bool showTime, QColor textColor, QWidget *parent)
 	: QLabel(parent)
 {
-	m_id = id;
-	m_sourceName = sourceName;
+	m_avSource = avSource;
 	m_showName = showName;
 	m_showDate = showDate;
 	m_showTime = showTime;
@@ -49,18 +48,22 @@ ImageWindow::ImageWindow(int id, QString sourceName, bool showName, bool showDat
 	setMaximumWidth(640);
 	setMaximumHeight(480);
 
-	m_timeoutTimer = startTimer(SPACESVIEW_CAMERA_DEADTIME);
+	if (m_avSource)
+		m_timer = startTimer(30);
 }
-
 
 ImageWindow::~ImageWindow()
 {
-	killTimer(m_timeoutTimer);
+	killTimer(m_timer);
+	m_avSource = NULL;
 }
 
 QString ImageWindow::sourceName()
 {
-	return m_sourceName;
+	if (m_avSource)
+		return m_avSource->name();
+
+	return QString();
 }
 
 void ImageWindow::setShowName(bool enable)
@@ -89,12 +92,14 @@ void ImageWindow::setTextColor(QColor color)
 
 void ImageWindow::mousePressEvent(QMouseEvent *)
 {
-	emit imageMousePress(m_id);
+	if (m_avSource)
+		emit imageMousePress(m_avSource->name());
 }
 
 void ImageWindow::mouseDoubleClickEvent(QMouseEvent *)
 {
-	emit imageDoubleClick(m_id);
+	if (m_avSource)
+		emit imageDoubleClick(m_avSource->name());
 }
 
 bool ImageWindow::selected()
@@ -111,8 +116,10 @@ void ImageWindow::setSelected(bool select)
 void ImageWindow::newImage(QImage image, qint64 timestamp)
 {
     m_lastFrame = SyntroClock();
+
     if (image.width() == 0)
-        return;                                             // just a null image
+        return;
+
 	m_idle = false;
 	m_image = image;
  
@@ -122,12 +129,16 @@ void ImageWindow::newImage(QImage image, qint64 timestamp)
     QDateTime dt = QDateTime::fromMSecsSinceEpoch(timestamp);
     m_displayDate = dt.date();
     m_displayTime = dt.time();
-    repaint();
+
+    update();
 }
 
-void ImageWindow::timerEvent(QTimerEvent * /*event*/)
+void ImageWindow::timerEvent(QTimerEvent *)
 {
-	if (SyntroUtils::syntroTimerExpired(SyntroClock(), m_lastFrame, SPACESVIEW_CAMERA_DEADTIME)) {
+	if (m_avSource && m_lastFrame < m_avSource->lastUpdate()) {
+		newImage(m_avSource->image(), m_avSource->imageTimestamp());
+	}
+	else if (SyntroUtils::syntroTimerExpired(SyntroClock(), m_lastFrame, SPACESVIEW_CAMERA_DEADTIME)) {
 		m_idle = true;
 		update();
 	}
@@ -168,7 +179,7 @@ void ImageWindow::paintEvent(QPaintEvent *event)
 	painter.setFont(QFont("Arial", fontHeight));
 
 	if (m_showName)
-		painter.drawText(dr.left() + 4, dr.top() + fontHeight + 2, m_sourceName);
+		painter.drawText(dr.left() + 4, dr.top() + fontHeight + 2, m_avSource->name());
 
 	if (m_showTime || m_showDate) {
 		if (dr.width() < 160) {

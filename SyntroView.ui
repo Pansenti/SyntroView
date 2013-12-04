@@ -35,7 +35,6 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionSelectStreams"/>
     <addaction name="actionVideoFeeds"/>
     <addaction name="actionShow_name"/>
     <addaction name="actionShow_date"/>
@@ -112,11 +111,6 @@
   <action name="actionBasicSetup">
    <property name="text">
     <string>Basic setup</string>
-   </property>
-  </action>
-  <action name="actionSelectStreams">
-   <property name="text">
-    <string>Select source streams</string>
    </property>
   </action>
   <action name="actionExit">

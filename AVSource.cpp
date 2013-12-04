@@ -70,9 +70,14 @@ void AVSource::setServicePort(int port)
 	}
 }
 
-qint64 AVSource::lastAVUpdate() const
+qint64 AVSource::lastUpdate() const
 {
-	return m_lastAVUpdate;
+	return m_lastUpdate;
+}
+
+void AVSource::setLastUpdate(qint64 timestamp)
+{
+	m_lastUpdate = timestamp;
 }
 
 QImage AVSource::image()
@@ -93,8 +98,10 @@ void AVSource::stopBackgroundProcessing()
 	if (m_decoder) {
 		disconnect(m_decoder, SIGNAL(newImage(int, QImage, qint64)), 
 			this, SLOT(newImage(int, QImage, qint64)));
+
 		disconnect(m_decoder, SIGNAL(newAudioSamples(int, QByteArray, qint64, int, int, int)), 
 			this, SLOT(newAudioSamples(int, QByteArray, qint64, int, int, int)));
+
 		m_decoder->exitThread();
 		m_decoder = NULL;
 	}
@@ -110,7 +117,7 @@ void AVSource::setAVData(int servicePort, QByteArray rawData)
 		return;
 
 	m_decoder->newAVData(rawData);
-	m_lastAVUpdate = SyntroClock();
+	m_lastUpdate = SyntroClock();
 }
 
 // signal from the decoder, processed image

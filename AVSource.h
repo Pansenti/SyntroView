@@ -38,7 +38,8 @@ public:
 	int servicePort() const;
 	void setServicePort(int port);
 
-	qint64 lastAVUpdate() const;
+	qint64 lastUpdate() const;
+	void setLastUpdate(qint64 timestamp);
 
 	QImage image();
 	qint64 imageTimestamp();
@@ -54,7 +55,7 @@ private:
 	QString m_name;
 	int m_servicePort;
 
-	qint64 m_lastAVUpdate;
+	qint64 m_lastUpdate;
 
 	QMutex m_imageMutex;
 	QImage m_image;

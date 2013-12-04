@@ -50,9 +50,6 @@
     <CustomBuild Include="ImageWindow.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="SelectStreamsDlg.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="SyntroView.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -102,9 +99,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SelectStreamsDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SyntroView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -130,12 +124,6 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_ImageWindow.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_SelectStreamsDlg.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_SelectStreamsDlg.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_SyntroView.cpp">
