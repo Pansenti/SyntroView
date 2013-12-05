@@ -450,6 +450,15 @@ void SyntroView::saveWindowState()
 	settings->setValue("textColor", m_textColor);
 	settings->endGroup();
 	
+	settings->beginWriteArray("streamSources");
+
+	for (int i = 0; i < m_avSources.count(); i++) {
+		settings->setArrayIndex(i);
+		settings->setValue("source", m_avSources[i]->name());
+	}
+
+	settings->endArray();
+
 	delete settings;
 }
 
