@@ -51,7 +51,7 @@ public slots:
 	void onStats();
 	void onAbout();
 	void onBasicSetup();
-	void onVideoFeeds();
+	void onVideoStreams();
     void onShowName();
 	void onShowDate();
 	void onShowTime();
@@ -78,10 +78,8 @@ protected:
 
 private:
 	bool addAVSource(QString name);
-	void removeAVSource(QString name);
 
 	void layoutGrid();
-	void deleteGrid();
 	void initStatusBar();
 	void initMenus();
 	void saveWindowState();
@@ -93,13 +91,10 @@ private:
 	SyntroServer *m_controlServer;
 	ViewClient *m_client;
 	QStringList m_clientDirectory;
-	QGridLayout *m_grid;
 
 	QList<AVSource *> m_avSources;
 	QList<ImageWindow *> m_windowList;
 	QList<AVSource *> m_delayedDeleteList;
-
-	bool m_avSourceChanges;
 
 	DisplayStats *m_displayStats;
 	QLabel *m_controlStatus;

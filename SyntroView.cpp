@@ -32,7 +32,6 @@ SyntroView::SyntroView()
     m_logTag = "SyntroView";
 	ui.setupUi(this);
 
-	m_grid = NULL;
 	m_singleCamera = NULL;
 
 	m_audioSize = -1;
@@ -169,12 +168,12 @@ void SyntroView::timerEvent(QTimerEvent *event)
 
 void SyntroView::clientConnected()
 {
-	ui.actionVideoFeeds->setEnabled(true);
+	ui.actionVideoStreams->setEnabled(true);
 }
 
 void SyntroView::clientClosed()
 {
-	ui.actionVideoFeeds->setEnabled(false);
+	ui.actionVideoStreams->setEnabled(false);
 }
 
 void SyntroView::dirResponse(QStringList directory)
@@ -286,19 +285,54 @@ void SyntroView::onTextColor()
 		m_windowList[i]->setTextColor(m_textColor);
 }
 
-void SyntroView::onVideoFeeds()
+void SyntroView::onVideoStreams()
 {
-	QStringList currentStreams;
+	QStringList oldStreams;
 
 	for (int i = 0; i < m_avSources.count(); i++)
-		currentStreams.append(m_avSources.at(i)->name());
+		oldStreams.append(m_avSources.at(i)->name());
 
-	StreamDialog dlg(this, m_clientDirectory, currentStreams);
+	StreamDialog dlg(this, m_clientDirectory, oldStreams);
 
-	if (dlg.exec() == QDialog::Accepted) {
-		currentStreams = dlg.newStreams();
-		QMessageBox::information(this, "Stream config change", currentStreams.join('\n'));
-	}	
+	if (dlg.exec() != QDialog::Accepted)
+		return;
+
+	QStringList newStreams = dlg.newStreams();
+
+	QList<AVSource *> oldSourceList = m_avSources;
+	m_avSources.clear();
+
+	// don't tear down existing streams if we can rearrange them
+	for (int i = 0; i < newStreams.count(); i++) {
+		int oldIndex = oldStreams.indexOf(newStreams.at(i));
+
+		if (oldIndex == -1)
+			addAVSource(newStreams.at(i));
+		else
+			m_avSources.append(oldSourceList.at(oldIndex));
+	}
+
+	// delete streams we no longer need
+	for (int i = 0; i < oldStreams.count(); i++) {
+		if (newStreams.contains(oldStreams.at(i)))
+			continue;
+
+		AVSource *avSource = oldSourceList.at(i);
+
+		if (avSource->servicePort() >= 0) {
+			emit disableService(avSource->servicePort());
+
+			// neither of these is really necessary
+			avSource->setServicePort(-1);
+			avSource->stopBackgroundProcessing();
+		}
+		
+		// we will delete 5 seconds from now
+		avSource->setLastUpdate(SyntroClock());
+		m_delayedDeleteList.append(avSource);
+	}
+
+	layoutGrid();
 }
 
 bool SyntroView::addAVSource(QString name)
@@ -308,55 +342,11 @@ bool SyntroView::addAVSource(QString name)
 	if (!avSource)
 		return false;
 
-	ImageWindow *win = new ImageWindow(avSource, m_showName, m_showDate, m_showTime, m_textColor, this);
-
-	if (!win) {
-		delete avSource;
-		return false;
-	}
-
-	connect(win, SIGNAL(imageMousePress(QString)), this, SLOT(imageMousePress(QString)));
-	connect(win, SIGNAL(imageDoubleClick(QString)), this, SLOT(imageDoubleClick(QString)));
-
 	m_avSources.append(avSource);
-	m_windowList.append(win);
 	
 	emit enableService(avSource);
 
-	m_avSourceChanges = true;
-
 	return true;
-}
-
-void SyntroView::removeAVSource(QString name)
-{
-	for (int i = 0; i < m_avSources.count(); i++) {
-		if (m_avSources.at(i)->name() == name) {
-			AVSource *avSource = m_avSources.at(i);	
-			ImageWindow *win = m_windowList.at(i);
-
-			m_windowList.removeAt(i);
-			m_avSources.removeAt(i);
-
-			if (avSource->servicePort() >= 0) {
-				emit disableService(avSource->servicePort());
-
-				// neither of these is really necessary
-				avSource->setServicePort(-1);
-				avSource->stopBackgroundProcessing();
-
-				// we will delete 5 seconds from now
-				avSource->setLastUpdate(SyntroClock());
-				m_delayedDeleteList.append(avSource);
-			}
-
-			disconnect(win, SIGNAL(imageMousePress(QString)), this, SLOT(imageMousePress(QString)));
-			disconnect(win, SIGNAL(imageDoubleClick(QString)), this, SLOT(imageDoubleClick(QString)));
-			delete win;
-
-			m_avSourceChanges = true;
-		}
-	}	
 }
 
 void SyntroView::layoutGrid()
@@ -364,10 +354,9 @@ void SyntroView::layoutGrid()
 	int rows = 1;
 	int count = m_avSources.count();
 
-	if (m_grid) {
-		delete m_grid;
-		m_grid = NULL;
-	}
+	m_windowList.clear();
+
+	QWidget *newCentralWidget = new QWidget();
 
 	if (count == 0)
 		return;
@@ -391,40 +380,36 @@ void SyntroView::layoutGrid()
 	if (count % rows)
 		cols++;
 
-	m_grid = new QGridLayout(this);
-	m_grid->setSpacing(3);
-	m_grid->setContentsMargins(1, 1, 1, 1);
+	QGridLayout *grid = new QGridLayout(this);
+	grid->setSpacing(3);
+	grid->setContentsMargins(1, 1, 1, 1);
 	
 	for (int i = 0, k = 0; i < rows && k < count; i++) {
 		for (int j = 0; j < cols && k < count; j++) {
-			m_grid->addWidget(m_windowList.at(k), i, j);
+			ImageWindow *win = new ImageWindow(m_avSources.at(k), m_showName, m_showDate, m_showTime, m_textColor, newCentralWidget);
+			connect(win, SIGNAL(imageMousePress(QString)), this, SLOT(imageMousePress(QString)));
+			connect(win, SIGNAL(imageDoubleClick(QString)), this, SLOT(imageDoubleClick(QString)));
+			m_windowList.append(win);
+
+			grid->addWidget(m_windowList.at(k), i, j);
 			k++;
 		}
 	}
 
 	for (int i = 0; i < rows; i++)
-		m_grid->setRowStretch(i, 1);
+		grid->setRowStretch(i, 1);
 
 	for (int i = 0; i < cols; i++)
-		m_grid->setColumnStretch(i, 1);
+		grid->setColumnStretch(i, 1);
 
-	centralWidget()->setLayout(m_grid);
+	newCentralWidget->setLayout(grid);
+
+	QWidget *oldCentralWidget = centralWidget();
+
+	setCentralWidget(newCentralWidget);
+
+	delete oldCentralWidget;
 }
-
-void SyntroView::deleteGrid()
-{
-	ImageWindow *iw;
-
-	for (int i = 0; i < m_windowList.count(); i++) {
-		iw = m_windowList.at(i);
-		disconnect(iw, SIGNAL(imageMousePress(int)), this, SLOT(imageMousePress(int)));
-		disconnect(iw, SIGNAL(imageDoubleClick(int)), this, SLOT(imageDoubleClick(int)));
-		delete m_windowList.at(i);
-	}
-	delete m_grid;
-	m_windowList.clear();
-}
-
 
 void SyntroView::initStatusBar()
 {
@@ -438,8 +423,8 @@ void SyntroView::initMenus()
 	connect(ui.actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 	connect(ui.actionBasicSetup, SIGNAL(triggered()), this, SLOT(onBasicSetup()));
 
-	connect(ui.actionVideoFeeds, SIGNAL(triggered()), this, SLOT(onVideoFeeds()));
-	ui.actionVideoFeeds->setEnabled(false);
+	connect(ui.actionVideoStreams, SIGNAL(triggered()), this, SLOT(onVideoStreams()));
+	ui.actionVideoStreams->setEnabled(false);
 
 	connect(ui.onStats, SIGNAL(triggered()), this, SLOT(onStats()));
 	connect(ui.actionShow_name, SIGNAL(triggered()), this, SLOT(onShowName()));

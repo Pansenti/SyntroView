@@ -43,7 +43,7 @@ StreamDialog::StreamDialog(QWidget *parent, QStringList directory, QStringList c
 	connect(m_okButton, SIGNAL(clicked()), this, SLOT(accept()));
 	connect(m_cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
-	setWindowTitle("Choose Video Feeds");
+	setWindowTitle("Video Stream Selection");
 } 
 
 void StreamDialog::parseAvailableServices(QStringList directory)
@@ -132,7 +132,7 @@ void StreamDialog::layoutWindow()
 		m_currentList->addItem(new QListWidgetItem(m_currentStreams.at(i)));
 
 	currentLayout->addStretch();	
-	currentLayout->addWidget(new QLabel("Current Feeds"));
+	currentLayout->addWidget(new QLabel("Current Streams"));
 	currentLayout->addWidget(m_currentList, 1);
 	currentLayout->addStretch();
 
@@ -165,7 +165,7 @@ void StreamDialog::layoutWindow()
 		m_availableList->addItem(new QListWidgetItem(m_availableStreams.at(i)));
 
 	availableLayout->addStretch();	
-	availableLayout->addWidget(new QLabel("Available Feeds"));
+	availableLayout->addWidget(new QLabel("Available Streams"));
 	availableLayout->addWidget(m_availableList, 1);
 	availableLayout->addStretch();
 

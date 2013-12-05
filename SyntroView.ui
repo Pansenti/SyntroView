@@ -35,7 +35,7 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionVideoFeeds"/>
+    <addaction name="actionVideoStreams"/>
     <addaction name="actionShow_name"/>
     <addaction name="actionShow_date"/>
     <addaction name="actionShow_time"/>
@@ -118,9 +118,9 @@
     <string>Exit</string>
    </property>
   </action>
-  <action name="actionVideoFeeds">
+  <action name="actionVideoStreams">
    <property name="text">
-    <string>Video feeds ...</string>
+    <string>Video streams ...</string>
    </property>
   </action>
  </widget>
