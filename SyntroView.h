@@ -51,36 +51,37 @@ public slots:
 	void onStats();
 	void onAbout();
 	void onBasicSetup();
-	void onSelectStreams();
+	void onChooseVideoStreams();
     void onShowName();
 	void onShowDate();
 	void onShowTime();
 	void onTextColor();
-	void imageMousePress(int id);
-	void imageDoubleClick(int id);
+	void imageMousePress(QString name);
+	void imageDoubleClick(QString name);
 	void singleCameraClosed();
-	void newStreams();
-	void newWindowLayout();
+	void clientConnected();
+	void clientClosed();
+	void dirResponse(QStringList directory);
 
-    void newImage(int slot, QImage image, qint64 timestamp);
-    void newAudioSamples(int slot, QByteArray dataArray, qint64 timestamp, int rate, int channels, int size);
+	void newAudio(QByteArray data, int rate, int channels, int size);
 
 #ifndef Q_OS_UNIX
     void handleAudioOutStateChanged(QAudio::State);
 #endif
 
 signals:
-	void deleteAllServices();
-	void deleteStreams();
-	void addStreams();
+	void requestDir();
+	void enableService(AVSource *avSource);
+	void disableService(int servicePort);
 
 protected:
 	void closeEvent(QCloseEvent *event);
 	void timerEvent(QTimerEvent *event);
 
 private:
-	void layoutGrid(QStringList sourceList);
-	void deleteGrid();
+	bool addAVSource(QString name);
+
+	void layoutGrid();
 	void initStatusBar();
 	void initMenus();
 	void saveWindowState();
@@ -91,19 +92,25 @@ private:
 
 	SyntroServer *m_controlServer;
 	ViewClient *m_client;
-	QGridLayout *m_grid;
+	QStringList m_clientDirectory;
+
+	QList<AVSource *> m_avSources;
 	QList<ImageWindow *> m_windowList;
+	QList<AVSource *> m_delayedDeleteList;
+
 	DisplayStats *m_displayStats;
 	QLabel *m_controlStatus;
+
 	int m_statusTimer;
+	int m_directoryTimer;
+
 	bool m_showName;
 	bool m_showDate;
 	bool m_showTime;
 	QColor m_textColor;
-	int m_singleCameraId;
-	ViewSingleCamera *m_singleCamera;
 
-	int m_enableServicesTimer;
+	ViewSingleCamera *m_singleCamera;
+	int m_selectedSource;
 
 #ifndef Q_OS_MAC
 #ifndef Q_OS_UNIX
@@ -122,8 +129,6 @@ private:
 	int m_audioChannels;
 	int m_audioSize;
 	int m_audioRate;
-
-    int m_activeAudioSlot;
 
 	QString m_logTag;
 };

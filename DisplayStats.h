@@ -20,11 +20,11 @@
 #ifndef DISPLAYSTATS_H
 #define DISPLAYSTATS_H
 
-#include <QDialog>
+#include <qdialog.h>
 #include <qevent.h>
 #include "ui_DisplayStats.h"
 #include "SyntroLib.h"
-#include "DisplayStatsData.h"
+#include "AVSource.h"
 
 #define DEFAULT_ROW_HEIGHT 20
 
@@ -33,13 +33,12 @@ class DisplayStats : public QDialog
 	Q_OBJECT
 
 public:
-	DisplayStats(QWidget *parent, bool receive, bool transmit);
+	DisplayStats(QWidget *parent);
 	~DisplayStats();
 
-public slots:
-	void receiveData(int slot, int bytes);
-	void transmitData(int slot, int bytes);
-	void setServiceName(int slot, QString name);
+	void addSource(AVSource *avSource);
+	void removeSource(QString name);
+
 	void deleteAllServices();
 
 protected:
@@ -52,10 +51,7 @@ private:
 	void restoreDialogState();
 
 	int	m_timer;
-	bool m_RX;
-	bool m_TX;
-	QList<DisplayStatsData> m_data;
-	QMutex m_dataMutex;
+	QList<AVSource *> m_avSources;
 
 	Ui::CDisplayStats ui;
 

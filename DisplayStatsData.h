@@ -25,28 +25,18 @@
 class DisplayStatsData
 {
 public:
-	DisplayStatsData(QString serviceName);
-	DisplayStatsData(const DisplayStatsData &rhs);
+	DisplayStatsData();
 
-	DisplayStatsData& operator=(const DisplayStatsData &rhs);
-	bool operator==(DisplayStatsData &rhs) const; 
+	void update(int bytes);
+	void updateRates(int secs);
+	void clear();
 
-	QString m_serviceName;
-	qint64	m_RXRecords;			// received record count
-	qint64	m_RXBytes;				// received byte count
-	qint64	m_TXRecords;			// transmitted record count
-	qint64	m_TXBytes;				// transmitted byte count
-
-	int	m_RXRecordTemp;				// for rate calculation
-	int	m_RXByteTemp;				// for rate calculation
-	unsigned m_RXRecordRate;		// records per second
-	unsigned m_RXByteRate;			// bytes per second
-
-	int	m_TXRecordTemp;				// for rate calculation
-	int	m_TXByteTemp;				// for rate calculation
-	unsigned int m_TXRecordRate;	// records per second
-	unsigned int m_TXByteRate;		// bytes per second
+	int m_totalRecords;
+	int m_totalBytes;
+	int m_records;
+	int m_bytes;
+	qreal m_recordRate;
+	qreal m_byteRate;
 };
-
 
 #endif // DISPLAYSTATSDATA_H

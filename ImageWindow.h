@@ -20,21 +20,20 @@
 #ifndef IMAGEWINDOW_H
 #define IMAGEWINDOW_H
 
-#include <QLabel>
-#include "SyntroLib.h"
+#include <qlabel.h>
 
+#include "SyntroLib.h"
+#include "AVSource.h"
 
 class ImageWindow : public QLabel
 {
 	Q_OBJECT
 
 public:
-	ImageWindow(int id, QString sourceName, bool showName, bool showDate, bool showTime, QColor textColor, QWidget *parent = 0);
+	ImageWindow(AVSource *avSource, bool showName, bool showDate, bool showTime, QColor textColor, QWidget *parent = 0);
 	virtual ~ImageWindow();
 
 	QString sourceName();
-
-    void newImage(QImage image, qint64 timestamp);
 
 	void setShowName(bool enable);
 	void setShowDate(bool enable);
@@ -47,8 +46,8 @@ public:
 	QImage m_image;
 
 signals:
-	void imageMousePress(int id);
-	void imageDoubleClick(int id);
+	void imageMousePress(QString name);
+	void imageDoubleClick(QString name);
 
 protected:
 	void paintEvent(QPaintEvent *event);
@@ -57,17 +56,17 @@ protected:
 	void mouseDoubleClickEvent(QMouseEvent *event);
 
 private:
+    void newImage(QImage image, qint64 timestamp);
 	QRect drawingRect();
 
-	int m_id;
-	QString m_sourceName;
+	AVSource *m_avSource;
 	bool m_showName;
 	bool m_showDate;
 	bool m_showTime;
 	QColor m_textColor;
 	bool m_selected;
 	bool m_idle;
-	int m_timeoutTimer;
+	int m_timer;
     QDate m_displayDate;
     QTime m_displayTime;
 	qint64 m_lastFrame;

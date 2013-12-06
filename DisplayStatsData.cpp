@@ -20,54 +20,36 @@
 #include "DisplayStatsData.h"
 
 
-DisplayStatsData::DisplayStatsData(QString serviceName)
+DisplayStatsData::DisplayStatsData()
 {
-	m_serviceName = serviceName;
-	m_RXRecords = 0;
-	m_RXBytes = 0;
-	m_TXRecords = 0;
-	m_TXBytes = 0;
-
-	m_RXRecordTemp = 0;
-	m_RXByteTemp = 0;
-	m_RXRecordRate = 0;
-	m_RXByteRate = 0;
-
-	m_TXRecordTemp = 0;
-	m_TXByteTemp = 0;
-	m_TXRecordRate = 0;
-	m_TXByteRate = 0;
+	clear();
 }
 
-DisplayStatsData::DisplayStatsData(const DisplayStatsData &rhs)
+void DisplayStatsData::update(int bytes)
 {
-	*this = rhs;
+	m_totalRecords++;
+	m_totalBytes += bytes;
+	m_records++;
+	m_bytes += bytes;
 }
 
-DisplayStatsData& DisplayStatsData::operator=(const DisplayStatsData &rhs)
+void DisplayStatsData::updateRates(int secs)
 {
-	if (this != &rhs) {
-		m_serviceName = rhs.m_serviceName;
-		m_RXRecords = rhs.m_RXRecords;
-		m_RXBytes = rhs.m_RXBytes;
-		m_TXRecords = rhs.m_TXRecords;
-		m_TXBytes = rhs.m_TXBytes;
-
-		m_RXRecordTemp = rhs.m_RXRecordTemp;
-		m_RXByteTemp = rhs.m_RXByteTemp;
-		m_RXRecordRate = rhs.m_RXRecordRate;
-		m_RXByteRate = rhs.m_RXByteRate;
-
-		m_TXRecordTemp = rhs.m_TXRecordTemp;
-		m_TXByteTemp = rhs.m_TXByteTemp;
-		m_TXRecordRate = rhs.m_TXRecordRate;
-		m_TXByteRate = rhs.m_TXByteRate;
+	if (secs > 0) {
+		m_recordRate = (qreal)m_records / (qreal)secs;
+		m_byteRate = (qreal)m_bytes / (qreal)secs;
 	}
 
-	return *this;
+	m_records = 0;
+	m_bytes = 0;
 }
 
-bool DisplayStatsData::operator==(DisplayStatsData &rhs) const
+void DisplayStatsData::clear()
 {
-	return (m_serviceName == rhs.m_serviceName);
+	m_totalRecords = 0;
+	m_totalBytes = 0;
+	m_records = 0;
+	m_bytes = 0;
+	m_recordRate = 0.0;
+	m_byteRate = 0.0;
 }

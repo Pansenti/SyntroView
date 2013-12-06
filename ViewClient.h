@@ -22,45 +22,30 @@
 #define VIEWCLIENT_H
 
 #include "SyntroLib.h"
-
-#define	VIEWCLIENT_BACKGROUND_INTERVAL (SYNTRO_CLOCKS_PER_SEC/100)
-
-class AVMuxDecode;
-class SyntroView;
+#include "AVSource.h"
 
 class ViewClient : public Endpoint
 {
 	Q_OBJECT
 
 public:
-    ViewClient(SyntroView *parent);
-
-	QStringList streamSources();
+    ViewClient();
 
 public slots:
-	void deleteStreams();
-	void addStreams();
+	void enableService(AVSource *avSource);
+	void disableService(int servicePort);
+	void requestDir();
 
 signals:
-    void newAVData(int slot, QByteArray avmuxArray);
-	void newWindowLayout();
-	void receiveData(int slot, int bytes);
-	void setServiceName(int slot, QString name);
+	void clientConnected();
+	void clientClosed();
+	void dirResponse(QStringList directory);
 
 protected:
-    void appClientInit();
-    void appClientExit();
+	void appClientConnected();
+	void appClientClosed();
     void appClientReceiveMulticast(int servicePort, SYNTRO_EHEAD *multiCast, int len);
-    void appClientReceiveDirectory(QStringList /*dirList*/) {}
-
-private:
-	void loadStreamSources(QString group, QString src);
-
-	QStringList m_sources;
-    QList <int> m_avmuxPorts;
-    QList <AVMuxDecode *> m_avmuxDecoders;
-
-    SyntroView *m_parent;
+    void appClientReceiveDirectory(QStringList);
 };
 
 #endif // VIEWCLIENT_H
