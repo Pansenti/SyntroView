@@ -77,10 +77,8 @@ void StreamDialog::parseAvailableServices(QStringList directory)
 			if (m_currentStreams.contains(streamSource))
 				continue;
 
-			if (streamName == SYNTRO_STREAMNAME_AVMUX) {
+			if (streamName == SYNTRO_STREAMNAME_AVMUX)
 				m_availableStreams.append(streamSource);
-				break;
-			}
 		}
 	}		
 }
