@@ -22,7 +22,7 @@
 #include "SyntroView.h"
 #include "SyntroAboutDlg.h"
 #include "BasicSetupDlg.h"
-#include "streamdialog.h"
+#include "StreamDialog.h"
 
 #define GRID_SPACING 3
 

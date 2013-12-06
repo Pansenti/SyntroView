@@ -25,7 +25,7 @@
 
 #include "SyntroDefs.h"
 #include "DirectoryEntry.h"
-#include "streamdialog.h"
+#include "StreamDialog.h"
 #include "SyntroUtils.h"
 
 StreamDialog::StreamDialog(QWidget *parent, QStringList directory, QStringList currentStreams) 
