@@ -131,7 +131,7 @@ void SyntroView::closeEvent(QCloseEvent *)
 void SyntroView::timerEvent(QTimerEvent *event)
 {
 	if (event->timerId() == m_directoryTimer) {
-		 emit requestDir();
+		emit requestDir();
 
 		while (m_delayedDeleteList.count() > 0) {
 			qint64 lastUpdate = m_delayedDeleteList.at(0)->lastUpdate();
@@ -151,30 +151,36 @@ void SyntroView::timerEvent(QTimerEvent *event)
 
 void SyntroView::clientConnected()
 {
-	ui.actionVideoStreams->setEnabled(true);
+	emit requestDir();
 }
 
 void SyntroView::clientClosed()
 {
 	ui.actionVideoStreams->setEnabled(false);
+	m_clientDirectory.clear();
 }
 
 void SyntroView::dirResponse(QStringList directory)
 {
 	m_clientDirectory = directory;
+
+	if (m_clientDirectory.length() > 0) {
+		if (!ui.actionVideoStreams->isEnabled())
+			ui.actionVideoStreams->setEnabled(true);
+	}
 }
 
 void SyntroView::singleCameraClosed()
 {
 	if (m_singleCamera) {
 		delete m_singleCamera;
+		m_singleCamera = NULL;
 
 		if (m_selectedSource >= 0 && m_selectedSource < m_windowList.count()) {
 			m_windowList[m_selectedSource]->setSelected(false);
 			m_avSources[m_selectedSource]->enableAudio(false);
 		}
 
-		m_singleCamera = NULL;
 		m_selectedSource = -1;
 	}
 }
@@ -202,6 +208,9 @@ void SyntroView::imageMousePress(QString name)
 	}
 
 	if (!m_singleCamera)
+		return;
+
+	if (m_selectedSource == -1)
 		return;
 
 	m_singleCamera->setSource(m_avSources[m_selectedSource]);
