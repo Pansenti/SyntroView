@@ -52,7 +52,6 @@ private:
 
 	QListWidget *m_currentList;
 	QListWidget *m_availableList;
-	//bool m_wantLowResolutionFeeds;
 
 	QPushButton *m_addButton;
 	QPushButton *m_removeButton;

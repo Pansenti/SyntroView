@@ -57,21 +57,28 @@ StreamDialog::StreamDialog(QWidget *parent, QStringList directory, QStringList c
 void StreamDialog::parseAvailableServices(QStringList directory)
 {
 	DirectoryEntry de;
+	QString servicePath;
+	QString streamName;
+	QString streamSource;
 
 	for (int i = 0; i < directory.count(); i++) {
 		de.setLine(directory.at(i));
 
 		if (!de.isValid())
 			continue;
-
-		if (m_currentStreams.contains(de.appName()))
-			continue;
-		
+	
 		QStringList services = de.multicastServices();
 
 		for (int i = 0; i < services.count(); i++) {
-			if (services.at(i) == SYNTRO_STREAMNAME_AVMUX) {
-				m_availableStreams.append(de.appName());
+			servicePath = de.appName() + SYNTRO_SERVICEPATH_SEP + services.at(i);
+
+			SyntroUtils::removeStreamNameFromPath(servicePath, streamSource, streamName);
+ 
+			if (m_currentStreams.contains(streamSource))
+				continue;
+
+			if (streamName == SYNTRO_STREAMNAME_AVMUX) {
+				m_availableStreams.append(streamSource);
 				break;
 			}
 		}
