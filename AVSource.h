@@ -23,13 +23,13 @@
 #include <qmutex.h>
 
 #include "AVMuxDecode.h"
+#include "DisplayStatsData.h"
 
 class AVSource : public QObject
 {
 	Q_OBJECT
 
 public:
-	AVSource();
 	AVSource(QString streamName);
 	~AVSource();
 
@@ -50,12 +50,17 @@ public:
 	void enableAudio(bool enable);
 	bool audioEnabled() const;
 
+	DisplayStatsData stats() const;
+
 signals:
 	void newAudio(QByteArray data, int rate, int channels, int size);
 
 public slots:
 	void newImage(int slot, QImage image, qint64 timestamp);
 	void newAudioSamples(int slot, QByteArray data, qint64 timestamp, int rate, int channels, int size);
+
+protected:
+	void timerEvent(QTimerEvent *);
 
 private:
 	QString m_name;
@@ -68,17 +73,12 @@ private:
 	qint64 m_imageTimestamp;
 
 	bool m_audioEnabled;
-/*
-	QMutex m_audioMutex;
-	QByteArray m_latestAudio;
-	qint64 m_audioTimestamp;
-	int m_audioRate;
-	int m_audioChannels;
-	int m_audioSize;
-*/
 
 	QMutex m_decoderMutex;
 	AVMuxDecode *m_decoder;
+
+	int m_statsTimer;
+	DisplayStatsData m_stats;
 };
 
 #endif // AVSOURCE_H

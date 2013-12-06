@@ -21,12 +21,10 @@
 
 #define STAT_UPDATE_INTERVAL_SECS 2
 
-DisplayStats::DisplayStats(QWidget *parent, bool receive, bool transmit)
+DisplayStats::DisplayStats(QWidget *parent)
 	: QDialog(parent, Qt::WindowCloseButtonHint | Qt::WindowTitleHint)
 {
 	m_logTag = "DisplayStats";
-	m_RX = receive;
-	m_TX = transmit;
 
 	ui.setupUi(this);
 
@@ -38,7 +36,7 @@ DisplayStats::DisplayStats(QWidget *parent, bool receive, bool transmit)
     ui.statusCounts->setColumnWidth(4, 120);
 
     ui.statusCounts->setHorizontalHeaderLabels(
-                QStringList() << tr("Service") << tr("RX records")
+                QStringList() << tr("Stream") << tr("RX records")
                 << tr("RX bytes") << tr("RX record rate") << tr("RX byte rate"));
 
 
@@ -67,85 +65,61 @@ void DisplayStats::closeEvent(QCloseEvent *event)
 	event->ignore();
 }
 
-void DisplayStats::setServiceName(int slot, QString name)
+void DisplayStats::addSource(AVSource *avSource)
 {
-	if (slot != m_data.count()) {
-		logWarn(QString("Attempt to add service name in slot %1 not at end of table %2").arg(slot).arg(m_data.count()));
-		return;
-	}
+	int row = ui.statusCounts->rowCount();
 
-	m_data.append(DisplayStatsData(name));
+	ui.statusCounts->insertRow(row);
+	ui.statusCounts->setRowHeight(row, DEFAULT_ROW_HEIGHT);
 
-	ui.statusCounts->insertRow(slot);
-	ui.statusCounts->setRowHeight(slot, DEFAULT_ROW_HEIGHT);
+	QTableWidgetItem *item = new QTableWidgetItem(avSource->name());
+	item->setTextAlignment(Qt::AlignLeft | Qt::AlignBottom);
+	ui.statusCounts->setItem(row, 0, item);
 
-	for (int col = 0; col < 5; col++) {
-		QTableWidgetItem *item = new QTableWidgetItem();
-		item->setTextAlignment(Qt::AlignLeft | Qt::AlignBottom);
-		item->setFlags(Qt::ItemIsEnabled);
-		if (col == 0)
-			item->setText(name);
+	DisplayStatsData data = avSource->stats();
 
-		ui.statusCounts->setItem(slot, col, item);
-	}
+	item = new QTableWidgetItem(QString::number(data.m_totalRecords));
+	ui.statusCounts->setItem(row, 1, item);
+	
+	item = new QTableWidgetItem(QString::number(data.m_totalBytes));
+	ui.statusCounts->setItem(row, 2, item);
+
+	item = new QTableWidgetItem(QString::number(data.m_recordRate, 'f', 1));
+	ui.statusCounts->setItem(row, 3, item);
+
+	item = new QTableWidgetItem(QString::number(data.m_byteRate, 'f', 0));
+	ui.statusCounts->setItem(row, 4, item);
+
+	m_avSources.append(avSource);
 }
 
-void DisplayStats::deleteAllServices()
+void DisplayStats::removeSource(QString name)
 {
-	m_data.clear();
-	ui.statusCounts->clear();
-	ui.statusCounts->setRowCount(0);
-    ui.statusCounts->setHorizontalHeaderLabels(
-                QStringList() << tr("Service") << tr("RX records")
-                << tr("RX bytes") << tr("RX record rate") << tr("RX byte rate"));
+	int row = -1;
+ 
+	for (int i = 0; i < m_avSources.count(); i++) {
+		if (m_avSources.at(i)->name() == name) {
+			row = i;
+			break;
+		}
+	}
+
+	if (row == -1)
+		return;
+
+	ui.statusCounts->removeRow(row);
+	m_avSources.removeAt(row);	
 }
 
 void DisplayStats::timerEvent(QTimerEvent *)
-{
-	QMutexLocker lock(&m_dataMutex);
+{	
+	for (int i = 0; i < m_avSources.count(); i++) {
+		DisplayStatsData data = m_avSources.at(i)->stats();
 
-	for (int i = 0; i < m_data.count(); i++) {
-		if (m_RX){
-			m_data[i].m_RXRecordRate = m_data[i].m_RXRecordTemp;
-			m_data[i].m_RXByteRate = m_data[i].m_RXByteTemp;
-			m_data[i].m_RXRecordTemp = 0;
-			m_data[i].m_RXByteTemp = 0;
-			ui.statusCounts->item(i, 1)->setText(QString::number(m_data[i].m_RXRecords));
-			ui.statusCounts->item(i, 2)->setText(QString::number(m_data[i].m_RXBytes));
-			ui.statusCounts->item(i, 3)->setText(QString::number(m_data[i].m_RXRecordRate / STAT_UPDATE_INTERVAL_SECS));
-			ui.statusCounts->item(i, 4)->setText(QString::number(m_data[i].m_RXByteRate / STAT_UPDATE_INTERVAL_SECS));
-		}
-
-		if (m_TX) {
-			m_data[i].m_TXRecordRate = m_data[i].m_TXRecordTemp;
-			m_data[i].m_TXByteRate = m_data[i].m_TXByteTemp;
-			m_data[i].m_TXRecordTemp = 0;
-			m_data[i].m_TXByteTemp = 0;
-		}
-	}
-}
-
-void DisplayStats::receiveData(int slot, int bytes)
-{
-	QMutexLocker lock(&m_dataMutex);
-
-	if (slot >= 0 && slot < m_data.count()) {
-		m_data[slot].m_RXRecords++;
-		m_data[slot].m_RXBytes += bytes;
-		m_data[slot].m_RXRecordTemp++;
-		m_data[slot].m_RXByteTemp += bytes;
-	}
-}
-
-void DisplayStats::transmitData(int slot, int bytes)
-{
-	QMutexLocker lock(&m_dataMutex);
-
-	if (slot >= 0 && slot < m_data.count()) {
-		m_data[slot].m_TXRecords++;
-		m_data[slot].m_TXBytes += bytes;
-		m_data[slot].m_TXRecordTemp++;
-		m_data[slot].m_TXByteTemp += bytes;
+		ui.statusCounts->item(i, 1)->setText(QString::number(data.m_totalRecords));
+		ui.statusCounts->item(i, 2)->setText(QString::number(data.m_totalBytes));
+		ui.statusCounts->item(i, 3)->setText(QString::number(data.m_recordRate, 'f', 1));
+		ui.statusCounts->item(i, 4)->setText(QString::number(data.m_byteRate, 'f', 0));
 	}
 }
 

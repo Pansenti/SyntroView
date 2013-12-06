@@ -51,7 +51,7 @@ public slots:
 	void onStats();
 	void onAbout();
 	void onBasicSetup();
-	void onVideoStreams();
+	void onChooseVideoStreams();
     void onShowName();
 	void onShowDate();
 	void onShowTime();

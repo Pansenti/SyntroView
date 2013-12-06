@@ -48,7 +48,7 @@ SyntroView::SyntroView()
 	#endif
 #endif
 
-	m_displayStats = new DisplayStats(this, true, false);
+	m_displayStats = new DisplayStats(this);
 
 	SyntroUtils::syntroAppInit();
 
@@ -57,13 +57,6 @@ SyntroView::SyntroView()
 	m_client = new ViewClient();
 
 	connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
-/*
-    connect(m_client, SIGNAL(setServiceName(int, QString)),
-            m_displayStats, SLOT(setServiceName(int, QString)), Qt::QueuedConnection);
-
-    connect(m_client, SIGNAL(receiveData(int, int)),
-            m_displayStats, SLOT(receiveData(int, int)), Qt::DirectConnection);
-*/
 
 	connect(m_client, SIGNAL(clientConnected()), this, SLOT(clientConnected()));
 	connect(m_client, SIGNAL(clientClosed()), this, SLOT(clientClosed()));
@@ -114,14 +107,6 @@ void SyntroView::closeEvent(QCloseEvent *)
 {
  	killTimer(m_statusTimer);
 	killTimer(m_directoryTimer);
-
-/*
-    disconnect(m_client, SIGNAL(setServiceName(int, QString)),
-            m_displayStats, SLOT(setServiceName(int, QString)));
-
-    disconnect(m_client, SIGNAL(receiveData(int, int)),
-            m_displayStats, SLOT(receiveData(int, int)));
-*/
 
 	if (m_singleCamera) {
 		disconnect(m_singleCamera, SIGNAL(closed()), this, SLOT(singleCameraClosed()));
@@ -284,7 +269,7 @@ void SyntroView::onTextColor()
 		m_windowList[i]->setTextColor(m_textColor);
 }
 
-void SyntroView::onVideoStreams()
+void SyntroView::onChooseVideoStreams()
 {
 	QStringList oldStreams;
 
@@ -333,6 +318,7 @@ void SyntroView::onVideoStreams()
 		avSource->setLastUpdate(SyntroClock());
 		disconnect(avSource, SIGNAL(newAudio(QByteArray, int, int, int)), this, SLOT(newAudio(QByteArray, int, int, int)));
 		m_delayedDeleteList.append(avSource);
+		m_displayStats->removeSource(avSource->name());
 	}
 
 	layoutGrid();
@@ -348,7 +334,8 @@ bool SyntroView::addAVSource(QString name)
 	connect(avSource, SIGNAL(newAudio(QByteArray, int, int, int)), this, SLOT(newAudio(QByteArray, int, int, int)));
 
 	m_avSources.append(avSource);
-	
+	m_displayStats->addSource(avSource);
+
 	emit enableService(avSource);
 
 	return true;
@@ -428,7 +415,7 @@ void SyntroView::initMenus()
 	connect(ui.actionAbout, SIGNAL(triggered()), this, SLOT(onAbout()));
 	connect(ui.actionBasicSetup, SIGNAL(triggered()), this, SLOT(onBasicSetup()));
 
-	connect(ui.actionVideoStreams, SIGNAL(triggered()), this, SLOT(onVideoStreams()));
+	connect(ui.actionVideoStreams, SIGNAL(triggered()), this, SLOT(onChooseVideoStreams()));
 	ui.actionVideoStreams->setEnabled(false);
 
 	connect(ui.onStats, SIGNAL(triggered()), this, SLOT(onStats()));
@@ -524,26 +511,6 @@ void SyntroView::onBasicSetup()
 	dlg->show();
 }
 
-/*
-void SyntroView::newAudioSamples(int slot, QByteArray dataArray, qint64, 
-	int rate, int channels, int size)
-{
-    if (slot != m_activeAudioSlot)
-        return;
-
-	if ((m_audioRate != rate) || (m_audioSize != size) || (m_audioChannels != channels)) {
-		if (!audioOutOpen(rate, channels, size)) {
-            qDebug() << "Failed to open audio out device";
-            return;
-        }
-        m_audioRate = rate;
-		m_audioSize = size;
-		m_audioChannels = channels;
-	}
-	audioOutWrite(dataArray);
-}
-*/
-
 void SyntroView::newAudio(QByteArray data, int rate, int channels, int size)
 {
 	if ((m_audioRate != rate) || (m_audioSize != size) || (m_audioChannels != channels)) {
@@ -574,7 +541,7 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
      }
 */
     QAudioFormat format;
-    // Set up the format, eg.
+
     format.setSampleRate(rate);
     format.setChannelCount(channels);
     format.setSampleSize(size);
@@ -583,6 +550,7 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
     format.setSampleType(QAudioFormat::SignedInt);
 
     QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
+
     if (!info.isFormatSupported(format)) {
         qWarning() << "Cannot play audio.";
         return false;
@@ -593,11 +561,16 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 		m_audioOut = NULL;
 		m_audioOutDevice = NULL;
 	}
+
     m_audioOut = new QAudioOutput(format, this);
     m_audioOut->setBufferSize(rate * channels * (size / 8) / 10);
-//    qDebug() << "Buffer size: " << m_audioOut->bufferSize();
+
+	// qDebug() << "Buffer size: " << m_audioOut->bufferSize();
+
     connect(m_audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleAudioOutStateChanged(QAudio::State)));
+
 	m_audioOutDevice = m_audioOut->start();
+
 	return true;
 }
 

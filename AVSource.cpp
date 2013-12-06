@@ -19,12 +19,7 @@
 
 #include "AVSource.h"
 
-AVSource::AVSource()
-{
-	m_decoder = NULL;
-	m_servicePort = -1;
-	m_audioEnabled = false;
-}
+#define STAT_TIMER_INTERVAL 5
 
 AVSource::AVSource(QString streamName)
 {
@@ -32,6 +27,8 @@ AVSource::AVSource(QString streamName)
 	m_decoder = NULL;
 	m_servicePort = -1;
 	m_audioEnabled = false;
+
+	m_statsTimer = startTimer(STAT_TIMER_INTERVAL * 1000);
 }
 
 AVSource::~AVSource()
@@ -97,6 +94,11 @@ void AVSource::stopBackgroundProcessing()
 {
 	QMutexLocker lock(&m_decoderMutex);
 
+	if (m_statsTimer) {
+		killTimer(m_statsTimer);
+		m_statsTimer = 0;
+	}
+
 	if (m_decoder) {
 		disconnect(m_decoder, SIGNAL(newImage(int, QImage, qint64)), 
 			this, SLOT(newImage(int, QImage, qint64)));
@@ -128,12 +130,14 @@ void AVSource::setAVData(int servicePort, QByteArray rawData)
 	if (!m_decoder)
 		return;
 
+	m_stats.update(rawData.size());
+
 	m_decoder->newAVData(rawData);
 	m_lastUpdate = SyntroClock();
 }
 
 // signal from the decoder, processed image
-void AVSource::newImage(int /*slot*/, QImage image, qint64 timestamp)
+void AVSource::newImage(int, QImage image, qint64 timestamp)
 {
 	QMutexLocker lock(&m_imageMutex);
 
@@ -146,4 +150,14 @@ void AVSource::newAudioSamples(int, QByteArray data, qint64, int rate, int chann
 {
 	if (m_audioEnabled)
 		emit newAudio(data, rate, channels, size);
+}
+
+void AVSource::timerEvent(QTimerEvent *)
+{
+	m_stats.updateRates(STAT_TIMER_INTERVAL);
+}
+
+DisplayStatsData AVSource::stats() const
+{
+	return m_stats;
 }
