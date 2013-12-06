@@ -1,3 +1,8 @@
+# This file is part of Syntro
+#
+# Copyright (c) 2013 Pansenti, LLC. All rights reserved.
+#
+
 TEMPLATE = app
 TARGET = SyntroView
 
