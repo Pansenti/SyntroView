@@ -33,11 +33,11 @@ SyntroView::SyntroView()
 	ui.setupUi(this);
 
 	m_singleCamera = NULL;
+	m_selectedSource = -1;
 
 	m_audioSize = -1;
 	m_audioRate = -1;
 	m_audioChannels = -1;
-    m_activeAudioSlot = -1;
 
 #ifndef Q_OS_MAC
 	#ifndef Q_OS_UNIX
@@ -155,9 +155,7 @@ void SyntroView::timerEvent(QTimerEvent *event)
 				break;
 				
 			AVSource *avSource = m_delayedDeleteList.at(0);
-	
-			m_delayedDeleteList.removeAt(0);
-	
+			m_delayedDeleteList.removeAt(0);	
 			delete avSource;
 		}
 	}
@@ -186,39 +184,42 @@ void SyntroView::singleCameraClosed()
 	if (m_singleCamera) {
 		delete m_singleCamera;
 
-		//m_windowList[m_singleCameraId]->setSelected(false);
+		if (m_selectedSource >= 0 && m_selectedSource < m_windowList.count()) {
+			m_windowList[m_selectedSource]->setSelected(false);
+			m_avSources[m_selectedSource]->enableAudio(false);
+		}
+
 		m_singleCamera = NULL;
-		//m_singleCameraId = -1;
-		m_activeAudioSlot = -1;
+		m_selectedSource = -1;
 	}
 }
 
 void SyntroView::imageMousePress(QString name)
 {
-/*
-	if ((id == m_activeAudioSlot) && (m_singleCameraId < 0)) {
-		m_windowList[id]->setSelected(false);
-		m_activeAudioSlot = -1;
-		return;
-	}
-    m_activeAudioSlot = id;
-*/
-	int index = -1;
+	m_selectedSource = -1;
 
     for (int i = 0; i < m_windowList.count(); i++) {
 		if (m_avSources.at(i)->name() == name) {
-			index = i;
-			m_windowList[i]->setSelected(true);
+			if (m_windowList[i]->selected()) {
+				m_windowList[i]->setSelected(false);
+				m_avSources[i]->enableAudio(false);
+			}
+			else {
+				m_windowList[i]->setSelected(true);
+				m_avSources[i]->enableAudio(true);
+				m_selectedSource = i;
+			}
 		}
 		else {
 			m_windowList[i]->setSelected(false);
+			m_avSources[i]->enableAudio(false);
 		}
 	}
 
 	if (!m_singleCamera)
 		return;
 
-	m_singleCamera->setSource(m_avSources[index]);
+	m_singleCamera->setSource(m_avSources[m_selectedSource]);
 }
 
 void SyntroView::imageDoubleClick(QString name)
@@ -227,19 +228,19 @@ void SyntroView::imageDoubleClick(QString name)
 	if (m_singleCamera)
 		return;
 
-	int index = -1;
+	m_selectedSource = -1;
 
     for (int i = 0; i < m_windowList.count(); i++) {
 		if (m_avSources.at(i)->name() == name) {
-			index = i;
+			m_selectedSource = i;
 			break;
 		}
 	}
 
-	if (index == -1)
+	if (m_selectedSource == -1)
 		return;
 
-	m_singleCamera = new ViewSingleCamera(NULL, m_avSources[index]);
+	m_singleCamera = new ViewSingleCamera(NULL, m_avSources[m_selectedSource]);
 
 	if (!m_singleCamera)
 		return;
@@ -247,10 +248,8 @@ void SyntroView::imageDoubleClick(QString name)
 	connect(m_singleCamera, SIGNAL(closed()), this, SLOT(singleCameraClosed()));
 	m_singleCamera->show();
 
-	//m_singleCameraId = id;
-	m_windowList[index]->setSelected(true);
-
-    //m_activeAudioSlot = id;
+	m_windowList[m_selectedSource]->setSelected(true);
+	m_avSources[m_selectedSource]->enableAudio(true);
 }
 
 void SyntroView::onShowName()
@@ -297,6 +296,9 @@ void SyntroView::onVideoStreams()
 	if (dlg.exec() != QDialog::Accepted)
 		return;
 
+	if (m_singleCamera)
+		m_singleCamera->close();
+
 	QStringList newStreams = dlg.newStreams();
 
 	QList<AVSource *> oldSourceList = m_avSources;
@@ -329,6 +331,7 @@ void SyntroView::onVideoStreams()
 		
 		// we will delete 5 seconds from now
 		avSource->setLastUpdate(SyntroClock());
+		disconnect(avSource, SIGNAL(newAudio(QByteArray, int, int, int)), this, SLOT(newAudio(QByteArray, int, int, int)));
 		m_delayedDeleteList.append(avSource);
 	}
 
@@ -341,6 +344,8 @@ bool SyntroView::addAVSource(QString name)
 
 	if (!avSource)
 		return false;
+
+	connect(avSource, SIGNAL(newAudio(QByteArray, int, int, int)), this, SLOT(newAudio(QByteArray, int, int, int)));
 
 	m_avSources.append(avSource);
 	
@@ -538,6 +543,23 @@ void SyntroView::newAudioSamples(int slot, QByteArray dataArray, qint64,
 	audioOutWrite(dataArray);
 }
 */
+
+void SyntroView::newAudio(QByteArray data, int rate, int channels, int size)
+{
+	if ((m_audioRate != rate) || (m_audioSize != size) || (m_audioChannels != channels)) {
+		if (!audioOutOpen(rate, channels, size)) {
+            qDebug() << "Failed to open audio out device";
+            return;
+        }
+
+        m_audioRate = rate;
+		m_audioSize = size;
+		m_audioChannels = channels;
+	}
+
+	audioOutWrite(data);
+}
+
 #ifndef Q_OS_UNIX
 bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {

@@ -63,6 +63,8 @@ public slots:
 	void clientClosed();
 	void dirResponse(QStringList directory);
 
+	void newAudio(QByteArray data, int rate, int channels, int size);
+
 #ifndef Q_OS_UNIX
     void handleAudioOutStateChanged(QAudio::State);
 #endif
@@ -108,6 +110,7 @@ private:
 	QColor m_textColor;
 
 	ViewSingleCamera *m_singleCamera;
+	int m_selectedSource;
 
 #ifndef Q_OS_MAC
 #ifndef Q_OS_UNIX
@@ -126,8 +129,6 @@ private:
 	int m_audioChannels;
 	int m_audioSize;
 	int m_audioRate;
-
-    int m_activeAudioSlot;
 
 	QString m_logTag;
 };

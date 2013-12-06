@@ -23,6 +23,7 @@ AVSource::AVSource()
 {
 	m_decoder = NULL;
 	m_servicePort = -1;
+	m_audioEnabled = false;
 }
 
 AVSource::AVSource(QString streamName)
@@ -30,6 +31,7 @@ AVSource::AVSource(QString streamName)
 	m_name = streamName;
 	m_decoder = NULL;
 	m_servicePort = -1;
+	m_audioEnabled = false;
 }
 
 AVSource::~AVSource()
@@ -107,6 +109,16 @@ void AVSource::stopBackgroundProcessing()
 	}
 }
 
+void AVSource::enableAudio(bool enable)
+{
+	m_audioEnabled = enable;
+}
+
+bool AVSource::audioEnabled() const
+{
+	return m_audioEnabled;
+}
+
 // feed new raw data to the decoder
 void AVSource::setAVData(int servicePort, QByteArray rawData)
 {
@@ -130,13 +142,8 @@ void AVSource::newImage(int /*slot*/, QImage image, qint64 timestamp)
 }
 
 // signal from the decoder, processed sound
-void AVSource::newAudioSamples(int /*slot*/, QByteArray data, qint64 timestamp, int rate, int channels, int size)
+void AVSource::newAudioSamples(int, QByteArray data, qint64, int rate, int channels, int size)
 {
-	QMutexLocker lock(&m_audioMutex);
-
-	m_latestAudio = data;
-	m_audioTimestamp = timestamp;
-	m_audioRate = rate;
-	m_audioChannels = channels;
-	m_audioSize = size;
+	if (m_audioEnabled)
+		emit newAudio(data, rate, channels, size);
 }
