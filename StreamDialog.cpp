@@ -43,6 +43,14 @@ StreamDialog::StreamDialog(QWidget *parent, QStringList directory, QStringList c
 	connect(m_okButton, SIGNAL(clicked()), this, SLOT(accept()));
 	connect(m_cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 
+	connect(m_upButton, SIGNAL(clicked()), this, SLOT(onMoveUp()));
+	connect(m_downButton, SIGNAL(clicked()), this, SLOT(onMoveDown()));
+
+	connect(m_currentList, SIGNAL(itemSelectionChanged()), this, SLOT(onCurrentStreamsSelectionChanged()));
+ 
+	m_upButton->setEnabled(false);
+	m_downButton->setEnabled(false);
+
 	setWindowTitle("Video Stream Selection");
 } 
 
@@ -114,6 +122,87 @@ void StreamDialog::onRemoveStreams()
 	}
 }
 
+void StreamDialog::onMoveUp()
+{
+	int count = m_currentList->count();
+
+	for (int i = 1; i < count; i++) {
+		if (m_currentList->item(i)->isSelected()) {
+			QListWidgetItem *item = m_currentList->takeItem(i);
+
+			if (item) {
+				i--;
+
+				m_currentList->insertItem(i, item);
+
+				if (i > 0)
+					m_currentList->setCurrentRow(i);
+			}
+
+			break;
+		}
+	}
+}
+
+void StreamDialog::onMoveDown()
+{
+	int count = m_currentList->count() - 1;
+
+	for (int i = 0; i < count; i++) {
+		if (m_currentList->item(i)->isSelected()) {
+			QListWidgetItem *item = m_currentList->takeItem(i);
+
+			if (item) {
+				i++;
+
+				m_currentList->insertItem(i, item);
+
+				if (i < count)
+					m_currentList->setCurrentRow(i);
+			}
+
+			break;
+		}
+	}
+}
+
+void StreamDialog::onCurrentStreamsSelectionChanged()
+{
+	int row = -1;
+	int count = m_currentList->count();
+
+	if (count > 1) {
+		for (int i = 0; i < count; i++) {
+			if (m_currentList->item(i)->isSelected()) {
+				if (row != -1) {
+					// multiple selections
+					row = -1;
+					break;
+				}
+
+				row = i;
+			}
+		}
+	}
+
+	if (row == -1) {
+		m_upButton->setEnabled(false);
+		m_downButton->setEnabled(false);
+	}
+	else if (row == 0) {
+		m_upButton->setEnabled(false);
+		m_downButton->setEnabled(true);
+	}
+	else if (row == (count - 1)) {
+		m_upButton->setEnabled(true);
+		m_downButton->setEnabled(false);
+	}
+	else {
+		m_upButton->setEnabled(true);
+		m_downButton->setEnabled(true);
+	}
+}
+
 void StreamDialog::layoutWindow()
 {
 	QVBoxLayout *vLayout = new QVBoxLayout();
@@ -131,6 +220,8 @@ void StreamDialog::layoutWindow()
 	for (int i = 0; i < m_currentStreams.count(); i++)
 		m_currentList->addItem(new QListWidgetItem(m_currentStreams.at(i)));
 
+	m_currentList->setMovement(QListView::Snap);
+
 	currentLayout->addStretch();	
 	currentLayout->addWidget(new QLabel("Current Streams"));
 	currentLayout->addWidget(m_currentList, 1);
@@ -143,10 +234,15 @@ void StreamDialog::layoutWindow()
 
 	m_addButton = new QPushButton("Add");
 	m_removeButton = new QPushButton("Remove");
+	m_upButton = new QPushButton("Up");
+	m_downButton = new QPushButton("Down");
 	
 	addRemoveLayout->addStretch();
 	addRemoveLayout->addWidget(m_addButton);
 	addRemoveLayout->addWidget(m_removeButton);
+	addRemoveLayout->addSpacerItem(new QSpacerItem(20, 20));
+	addRemoveLayout->addWidget(m_upButton);
+	addRemoveLayout->addWidget(m_downButton);
 	addRemoveLayout->addStretch();
 
 	hLayout->addLayout(addRemoveLayout);

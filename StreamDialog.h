@@ -39,6 +39,9 @@ public:
 public slots:
 	void onAddStreams();
 	void onRemoveStreams();
+	void onMoveUp();
+	void onMoveDown();
+	void onCurrentStreamsSelectionChanged();
 
 private:
 	void layoutWindow();
@@ -53,6 +56,8 @@ private:
 
 	QPushButton *m_addButton;
 	QPushButton *m_removeButton;
+	QPushButton *m_upButton;
+	QPushButton *m_downButton;
 
 	QPushButton *m_okButton;
 	QPushButton *m_cancelButton;
