@@ -3,6 +3,8 @@
 # Copyright (c) 2013 Pansenti, LLC. All rights reserved.
 #
 
+cache()
+
 TEMPLATE = app
 TARGET = SyntroView
 
@@ -19,15 +21,27 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += debug_and_release
 
 unix {
-	CONFIG += link_pkgconfig
 	macx {
-		CONFIG -= app_bundle
-	} else {
+#		CONFIG -= app_bundle
+		LIBS += /usr/local/lib/libSyntroLib.dylib \
+			/usr/local/lib/libSyntroGUI.dylib \
+			/usr/local/lib/libSyntroControlLib.dylib
+
+		INCLUDEPATH += /usr/local/include/syntro \
+				/usr/local/include/syntro/SyntroControlLib \
+				/usr/local/include/syntro/SyntroAV
+
+		target.path = /usr/local/bin
+		INSTALLS += target
+	}
+	else {
+		CONFIG += link_pkgconfig
+		PKGCONFIG += syntro
+
 		LIBS += -lasound
 		target.path = /usr/bin
 		INSTALLS += target
 	}
-	PKGCONFIG += syntro
 }
 
 DEFINES += QT_NETWORK_LIB
