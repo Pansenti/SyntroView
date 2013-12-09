@@ -22,41 +22,16 @@
 
 #include "SyntroUtils.h"
 
-void loadSettings(QStringList arglist);
-
 
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
 
-	loadSettings(a.arguments());
+	SyntroUtils::loadStandardSettings(PRODUCT_TYPE, a.arguments());
 
     SyntroView *w = new SyntroView();
 
 	w->show();
 
 	return a.exec();
-}
-
-
-void loadSettings(QStringList arglist)
-{
-	SyntroUtils::loadStandardSettings(PRODUCT_TYPE, arglist);
-
-	//	check to see if the array of sources exists
-
-	QSettings *settings = SyntroUtils::getSettings();
-
- 	int	nSize = settings->beginReadArray(SYNTRO_PARAMS_STREAM_SOURCES);
-	settings->endArray();
-
-	if (nSize == 0) {
-		settings->beginWriteArray(SYNTRO_PARAMS_STREAM_SOURCES);
-
-		settings->setArrayIndex(0);
-		settings->setValue(SYNTRO_PARAMS_STREAM_SOURCE, "App0");
-		settings->endArray();
-	}
-
-	delete settings;
 }
