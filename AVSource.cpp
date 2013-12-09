@@ -34,6 +34,11 @@ AVSource::AVSource(QString streamName)
 AVSource::~AVSource()
 {
 	stopBackgroundProcessing();
+
+	if (m_statsTimer) {
+		killTimer(m_statsTimer);
+		m_statsTimer = 0;
+	}
 }
 
 QString AVSource::name() const
@@ -93,11 +98,6 @@ qint64 AVSource::imageTimestamp()
 void AVSource::stopBackgroundProcessing()
 {
 	QMutexLocker lock(&m_decoderMutex);
-
-	if (m_statsTimer) {
-		killTimer(m_statsTimer);
-		m_statsTimer = 0;
-	}
 
 	if (m_decoder) {
 		disconnect(m_decoder, SIGNAL(newImage(int, QImage, qint64)), 
