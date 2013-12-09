@@ -141,7 +141,9 @@ void AVSource::newImage(int, QImage image, qint64 timestamp)
 {
 	QMutexLocker lock(&m_imageMutex);
 
-	m_image = image;
+	if (!image.isNull())
+		m_image = image;
+
 	m_imageTimestamp = timestamp;
 }
 
