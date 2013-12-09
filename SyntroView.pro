@@ -22,7 +22,6 @@ CONFIG += debug_and_release
 
 unix {
 	macx {
-#		CONFIG -= app_bundle
 		LIBS += /usr/local/lib/libSyntroLib.dylib \
 			/usr/local/lib/libSyntroGUI.dylib \
 			/usr/local/lib/libSyntroControlLib.dylib
@@ -32,7 +31,6 @@ unix {
 				/usr/local/include/syntro/SyntroAV
 
 		target.path = /usr/local/bin
-		INSTALLS += target
 	}
 	else {
 		CONFIG += link_pkgconfig
@@ -40,8 +38,9 @@ unix {
 
 		LIBS += -lasound
 		target.path = /usr/bin
-		INSTALLS += target
 	}
+
+	INSTALLS += target
 }
 
 DEFINES += QT_NETWORK_LIB
