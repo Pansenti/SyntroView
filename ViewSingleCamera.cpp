@@ -27,7 +27,7 @@ ViewSingleCamera::ViewSingleCamera(QWidget *parent, AVSource *avSource)
 	ui.setupUi(this);
 
 	m_avSource = avSource;
-	m_lastFrame = SyntroClock();
+	m_lastFrame = -1;
 
 	restoreWindowState();
 		
@@ -45,14 +45,17 @@ void ViewSingleCamera::setSource(AVSource *avSource)
 	m_avSource = avSource;
 
 	if (m_avSource) {
-		m_lastFrame = m_avSource->lastUpdate() - 1;
-
 		setWindowTitle(m_avSource->name());
+
+		newImage(m_avSource->image());
 
 		if (!m_timer)
 			m_timer = startTimer(30);
 	}
 	else {
+		m_lastFrame = -1;
+		ui.cameraView->setText("No Image");
+
 		if (m_timer) {
 			killTimer(m_timer);
 			m_timer = 0;
@@ -86,9 +89,9 @@ void ViewSingleCamera::newImage(QImage image)
 	m_lastFrame = SyntroClock();
 
 	if (image.width() == 0)
-		return;
-
-    ui.cameraView->setPixmap(QPixmap::fromImage(image.scaled(size(), Qt::KeepAspectRatio)));
+		ui.cameraView->setText("No Image");
+	else
+		ui.cameraView->setPixmap(QPixmap::fromImage(image.scaled(size(), Qt::KeepAspectRatio)));
 
     update();
 }
