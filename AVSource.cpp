@@ -27,6 +27,7 @@ AVSource::AVSource(QString streamName)
 	m_decoder = NULL;
 	m_servicePort = -1;
 	m_audioEnabled = false;
+	m_lastUpdate = 0;
 
 	m_statsTimer = startTimer(STAT_TIMER_INTERVAL * 1000);
 }
