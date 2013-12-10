@@ -45,6 +45,8 @@ void ViewSingleCamera::setSource(AVSource *avSource)
 	m_avSource = avSource;
 
 	if (m_avSource) {
+		m_lastFrame = m_avSource->lastUpdate() - 1;
+
 		setWindowTitle(m_avSource->name());
 
 		if (!m_timer)
