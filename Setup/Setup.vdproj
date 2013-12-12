@@ -27,8 +27,20 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_2AD6637C66004B4FAE2C6031DC4C7E0F"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_42AB38D752C54A20BB17E9924D36F70D"
+        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -51,6 +63,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_8A8604BD50214DCC95C0B336B0E9AB86"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8C8C69C1D2844F2398563E70CF48CDC6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -63,13 +81,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_B2B83341DA99057BB46E967FBD11DE66"
-        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
+        "MsmKey" = "8:_B238BD49EF56458FA13DE83777B040E1"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_FC1AEAB9D7F04513BCE496838C232A87"
+        "MsmKey" = "8:_B2B83341DA99057BB46E967FBD11DE66"
         "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -98,6 +116,19 @@
             "PrerequisitesLocation" = "2:1"
             "Url" = "8:"
             "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.0,Profile=Client"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4 Client Profile (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.0,Profile=Client"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Windows.Installer.3.1"
+                    {
+                    "Name" = "8:Windows Installer 3.1"
+                    "ProductCode" = "8:Microsoft.Windows.Installer.3.1"
+                    }
+                }
             }
         }
         "Release"
@@ -197,6 +228,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2AD6637C66004B4FAE2C6031DC4C7E0F"
+            {
+            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\plugins\\imageformats\\qjpeg.dll"
+            "TargetName" = "8:qjpeg.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_00971FFBB27C489E8182776FA193DBCB"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6DB71F0021460AE03D7CAF1B2FB4B039"
             {
             "SourcePath" = "8:Qt5Gui.dll"
@@ -257,6 +308,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8A8604BD50214DCC95C0B336B0E9AB86"
+            {
+            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\plugins\\platforms\\qwindows.dll"
+            "TargetName" = "8:qwindows.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3F9926BA6D594CA28F57EC0705F4FD99"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8C8C69C1D2844F2398563E70CF48CDC6"
             {
             "SourcePath" = "8:..\\SyntroView.ico"
@@ -295,6 +366,26 @@
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
             "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B238BD49EF56458FA13DE83777B040E1"
+            {
+            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\plugins\\platforms\\qwindows.dll"
+            "TargetName" = "8:qwindows.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B2B83341DA99057BB46E967FBD11DE66"
@@ -355,6 +446,39 @@
             "Property" = "8:TARGETDIR"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_DB4626CA725E479C9C6DFC64E0BEBEE5"
+                    {
+                    "Name" = "8:plugins"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_103DC1D6587E4E9DABAF7DF7E378F0C0"
+                        "Folders"
+                        {
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_00971FFBB27C489E8182776FA193DBCB"
+                            {
+                            "Name" = "8:imageformats"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_53414330AF294BAA939002F68AC987B6"
+                                "Folders"
+                                {
+                                }
+                            }
+                            "{9EF0B969-E518-4E46-987F-47570745A589}:_3F9926BA6D594CA28F57EC0705F4FD99"
+                            {
+                            "Name" = "8:platforms"
+                            "AlwaysCreate" = "11:FALSE"
+                            "Condition" = "8:"
+                            "Transitive" = "11:FALSE"
+                            "Property" = "8:_4EB4AC0B7A224FEF9BDF8ABEE6704476"
+                                "Folders"
+                                {
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -918,7 +1042,7 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_FC1AEAB9D7F04513BCE496838C232A87"
+            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_42AB38D752C54A20BB17E9924D36F70D"
             {
             "UseDynamicProperties" = "11:TRUE"
             "IsDependency" = "11:TRUE"
