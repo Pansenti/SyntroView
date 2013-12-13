@@ -87,6 +87,7 @@ private:
 	void saveWindowState();
 	void restoreWindowState();
 	void startControlServer();
+    QByteArray convert8kTo48k(const QByteArray& audioData);
 
 	Ui::SyntroViewClass ui;
 
@@ -124,7 +125,6 @@ private:
 	bool audioOutOpen(int rate, int channels, int size);
 	bool audioOutWrite(const QByteArray& audioData);
 	bool m_audioEnabled;
-
 	int m_audioChannels;
 	int m_audioSize;
 	int m_audioRate;

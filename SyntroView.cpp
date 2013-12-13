@@ -580,6 +580,7 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
     QString outputDeviceName;
     QAudioDeviceInfo outputDeviceInfo;
     bool found = false;
+    int bufferSize;
 
 	if (m_audioOut != NULL)
 		audioOutClose();
@@ -619,7 +620,18 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 
     QAudioFormat format;
 
+#ifdef Q_OS_OSX
+    if (rate == 8000) {
+        format.setSampleRate(48000);
+        bufferSize = 48000 * channels * (size / 8) / 10;
+    } else {
+        format.setSampleRate(rate);
+        bufferSize = rate * channels * (size / 8) / 10;
+    }
+#else
+    bufferSize = rate * channels * (size / 8) / 10;
     format.setSampleRate(rate);
+#endif
     format.setChannelCount(channels);
     format.setSampleSize(size);
     format.setCodec("audio/pcm");
@@ -638,7 +650,7 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 	}
 
     m_audioOut = new QAudioOutput(outputDeviceInfo, format, this);
-    m_audioOut->setBufferSize(rate * channels * (size / 8) / 10);
+    m_audioOut->setBufferSize(bufferSize);
 
 //    qDebug() << "Buffer size: " << m_audioOut->bufferSize();
 
@@ -665,7 +677,11 @@ bool SyntroView::audioOutWrite(const QByteArray& audioData)
 	if (m_audioOutDevice == NULL)
 		return false;
 
+#ifdef Q_OS_OSX
+    return m_audioOutDevice->write(convert8kTo48k(audioData));
+#else
 	return m_audioOutDevice->write(audioData) == audioData.length();
+#endif
 }
 
 void SyntroView::handleAudioOutStateChanged(QAudio::State /* state */)
@@ -763,3 +779,26 @@ bool SyntroView::audioOutWrite(const QByteArray& audioData)
     return writtenLength == samples;
 }
 #endif
+
+QByteArray SyntroView::convert8kTo48k(const QByteArray& audioData)
+{
+    QByteArray newData;
+    int sampleLength;
+    int sampleCount;
+    int sampleOffset;
+
+    if (m_audioRate != 8000)
+        return audioData;
+    sampleLength = (m_audioSize / 8) * m_audioChannels;
+    sampleCount = audioData.count() / sampleLength;
+
+    sampleOffset = 0;
+
+    for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++, sampleOffset += sampleLength) {
+        for (int copy = 0; copy < 6; copy++) {
+            for (int i = 0; i < sampleLength; i++)
+                newData.append(audioData[sampleOffset + i]);
+        }
+    }
+    return newData;
+}
