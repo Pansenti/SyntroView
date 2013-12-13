@@ -15,31 +15,7 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_031E6729C3BB4B81B80460A2FF27A265"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0429014EC30B15844E1D7791B9987EFF"
-        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_239668CD0A6E75EF4F5936187F525B72"
-        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2AD6637C66004B4FAE2C6031DC4C7E0F"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2D02114653414ED6AF99CD90AF36BED4"
+        "MsmKey" = "8:_17FCDFC7EBD54E41AF823521DEDADD73"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -51,8 +27,14 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6DB71F0021460AE03D7CAF1B2FB4B039"
-        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
+        "MsmKey" = "8:_6F444E1E2D094463AE73A994437A4CCD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_708ED4EAEE504E90A4FB1E545700BF0D"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -69,8 +51,8 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_8A8604BD50214DCC95C0B336B0E9AB86"
-        "OwnerKey" = "8:_UNDEFINED"
+        "MsmKey" = "8:_85A7177DD253A8171302A7739CA1FA6A"
+        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -81,13 +63,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A5FB9BE6DB20A9F10034ACE28EC570FD"
-        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B238BD49EF56458FA13DE83777B040E1"
+        "MsmKey" = "8:_9C486B992FB54B2CB484E48C24A72ACD"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -99,14 +75,32 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DA5C387C3910420CB9F50D88B17165A6"
+        "MsmKey" = "8:_D88998B711F67D2754C1A583BC6144FB"
+        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_DD9A551EE6BF433AAF24718FF8B89A24"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_F0BC46CF9D74464390AB676F440E520D"
+        "MsmKey" = "8:_DE7687BDD2AB0DBA7FF626CFB4313042"
+        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EC6921C4B04A444B9338934C484E61FB"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FAEFD2FBC65F910FC1E549D7D30B8A8B"
+        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -206,89 +200,9 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_031E6729C3BB4B81B80460A2FF27A265"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_17FCDFC7EBD54E41AF823521DEDADD73"
             {
-            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\bin\\icuuc51.dll"
-            "TargetName" = "8:icuuc51.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0429014EC30B15844E1D7791B9987EFF"
-            {
-            "SourcePath" = "8:Qt5Multimedia.dll"
-            "TargetName" = "8:Qt5Multimedia.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_239668CD0A6E75EF4F5936187F525B72"
-            {
-            "SourcePath" = "8:Qt5Core.dll"
-            "TargetName" = "8:Qt5Core.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2AD6637C66004B4FAE2C6031DC4C7E0F"
-            {
-            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\plugins\\imageformats\\qjpeg.dll"
-            "TargetName" = "8:qjpeg.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_3D6D02EC6C084E59BA7D56774C332DE3"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2D02114653414ED6AF99CD90AF36BED4"
-            {
-            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\bin\\icuin51.dll"
+            "SourcePath" = "8:C:\\Qt\\Qt5.2.0\\5.2.0\\msvc2010_opengl\\bin\\icuin51.dll"
             "TargetName" = "8:icuin51.dll"
             "Tag" = "8:"
             "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
@@ -306,10 +220,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6DB71F0021460AE03D7CAF1B2FB4B039"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6F444E1E2D094463AE73A994437A4CCD"
             {
-            "SourcePath" = "8:Qt5Gui.dll"
-            "TargetName" = "8:Qt5Gui.dll"
+            "SourcePath" = "8:C:\\Qt\\Qt5.2.0\\5.2.0\\msvc2010_opengl\\bin\\icuuc51.dll"
+            "TargetName" = "8:icuuc51.dll"
             "Tag" = "8:"
             "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
             "Condition" = "8:"
@@ -323,7 +237,27 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_708ED4EAEE504E90A4FB1E545700BF0D"
+            {
+            "SourcePath" = "8:C:\\Qt\\Qt5.2.0\\5.2.0\\msvc2010_opengl\\bin\\icudt51.dll"
+            "TargetName" = "8:icudt51.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7314CA834922A3654D1E521EF31078A4"
@@ -366,12 +300,12 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8A8604BD50214DCC95C0B336B0E9AB86"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_85A7177DD253A8171302A7739CA1FA6A"
             {
-            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\plugins\\platforms\\qwindows.dll"
-            "TargetName" = "8:qwindows.dll"
+            "SourcePath" = "8:Qt5Multimedia.dll"
+            "TargetName" = "8:Qt5Multimedia.dll"
             "Tag" = "8:"
-            "Folder" = "8:_992FBE306E5142338C03C433C78E5B6C"
+            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -383,7 +317,7 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8C8C69C1D2844F2398563E70CF48CDC6"
@@ -406,32 +340,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A5FB9BE6DB20A9F10034ACE28EC570FD"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9C486B992FB54B2CB484E48C24A72ACD"
             {
-            "SourcePath" = "8:Qt5Widgets.dll"
-            "TargetName" = "8:Qt5Widgets.dll"
-            "Tag" = "8:"
-            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B238BD49EF56458FA13DE83777B040E1"
-            {
-            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\plugins\\platforms\\qwindows.dll"
+            "SourcePath" = "8:C:\\Qt\\Qt5.2.0\\5.2.0\\msvc2010_opengl\\plugins\\platforms\\qwindows.dll"
             "TargetName" = "8:qwindows.dll"
             "Tag" = "8:"
-            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
+            "Folder" = "8:_992FBE306E5142338C03C433C78E5B6C"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -466,9 +380,69 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DA5C387C3910420CB9F50D88B17165A6"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D88998B711F67D2754C1A583BC6144FB"
             {
-            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\bin\\Qt5Network.dll"
+            "SourcePath" = "8:Qt5Core.dll"
+            "TargetName" = "8:Qt5Core.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DD9A551EE6BF433AAF24718FF8B89A24"
+            {
+            "SourcePath" = "8:C:\\Qt\\Qt5.2.0\\5.2.0\\msvc2010_opengl\\plugins\\imageformats\\qjpeg.dll"
+            "TargetName" = "8:qjpeg.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_3D6D02EC6C084E59BA7D56774C332DE3"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DE7687BDD2AB0DBA7FF626CFB4313042"
+            {
+            "SourcePath" = "8:Qt5Gui.dll"
+            "TargetName" = "8:Qt5Gui.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_EC6921C4B04A444B9338934C484E61FB"
+            {
+            "SourcePath" = "8:C:\\Qt\\Qt5.2.0\\5.2.0\\msvc2010_opengl\\bin\\Qt5Network.dll"
             "TargetName" = "8:Qt5Network.dll"
             "Tag" = "8:"
             "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
@@ -486,10 +460,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F0BC46CF9D74464390AB676F440E520D"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FAEFD2FBC65F910FC1E549D7D30B8A8B"
             {
-            "SourcePath" = "8:C:\\Qt\\Qt5.1.1\\5.1.1\\msvc2010_opengl\\bin\\icudt51.dll"
-            "TargetName" = "8:icudt51.dll"
+            "SourcePath" = "8:Qt5Widgets.dll"
+            "TargetName" = "8:Qt5Widgets.dll"
             "Tag" = "8:"
             "Folder" = "8:_D7CA834991D44CF69095469BD96C59AC"
             "Condition" = "8:"
@@ -503,7 +477,7 @@
             "PackageAs" = "3:1"
             "Register" = "3:1"
             "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
         }
@@ -602,7 +576,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:Syntro video stream viewer"
         "ARPURLINFOABOUT" = "8:http://www.pansenti.com"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_8C8C69C1D2844F2398563E70CF48CDC6"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
