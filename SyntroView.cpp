@@ -53,8 +53,13 @@ SyntroView::SyntroView()
     settings->beginGroup(AUDIO_GROUP);
 
     if (!settings->contains(AUDIO_OUTPUT_DEVICE))
-        settings->setValue(AUDIO_OUTPUT_DEVICE, AUDIO_DEFAULT_DEVICE);
- 
+
+#ifdef Q_OS_OSX
+    settings->setValue(AUDIO_OUTPUT_DEVICE, AUDIO_DEFAULT_DEVICE_MAC);
+#else
+    settings->setValue(AUDIO_OUTPUT_DEVICE, AUDIO_DEFAULT_DEVICE);
+#endif
+
     if (!settings->contains(AUDIO_ENABLE))
         settings->setValue(AUDIO_ENABLE, true);
 
@@ -572,21 +577,45 @@ void SyntroView::newAudio(QByteArray data, int rate, int channels, int size)
 #if defined(Q_OS_WIN) || defined(Q_OS_OSX)
 bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {
+    QString outputDeviceName;
+    QAudioDeviceInfo outputDeviceInfo;
+    bool found = false;
+
 	if (m_audioOut != NULL)
 		audioOutClose();
 
     if ((rate == 0) || (channels == 0) || (size == 0))
         return false;
 
-    foreach (const QAudioDeviceInfo& deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
-        qDebug() << "Device name: " << deviceInfo.deviceName();
-        qDebug() << "    codec: " << deviceInfo.supportedCodecs();
-        qDebug() << "    channels:" << deviceInfo.supportedChannelCounts();
-        qDebug() << "    rates:" << deviceInfo.supportedSampleRates();
-        qDebug() << "    sizes:" << deviceInfo.supportedSampleSizes();
-        qDebug() << "    types:" << deviceInfo.supportedSampleTypes();
-        qDebug() << "    order:" << deviceInfo.supportedByteOrders();
-     }
+    QSettings *settings = SyntroUtils::getSettings();
+    settings->beginGroup(AUDIO_GROUP);
+    outputDeviceName = settings->value(AUDIO_OUTPUT_DEVICE).toString();
+    settings->endGroup();
+    delete settings;
+
+    if (outputDeviceName != AUDIO_DEFAULT_DEVICE) {
+        foreach (const QAudioDeviceInfo& deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+            qDebug() << "Device name: " << deviceInfo.deviceName();
+            qDebug() << "    codec: " << deviceInfo.supportedCodecs();
+            qDebug() << "    channels:" << deviceInfo.supportedChannelCounts();
+            qDebug() << "    rates:" << deviceInfo.supportedSampleRates();
+            qDebug() << "    sizes:" << deviceInfo.supportedSampleSizes();
+            qDebug() << "    types:" << deviceInfo.supportedSampleTypes();
+            qDebug() << "    order:" << deviceInfo.supportedByteOrders();
+
+            if (deviceInfo.deviceName() == outputDeviceName) {
+                outputDeviceInfo = deviceInfo;
+                found = true;
+            }
+        }
+        if (!found) {
+            qWarning() << "Could not find audio device " << outputDeviceName;
+            return false;
+        }
+    } else {
+        outputDeviceInfo = QAudioDeviceInfo::defaultOutputDevice();
+    }
+
 
     QAudioFormat format;
 
@@ -597,9 +626,7 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::SignedInt);
 
-    QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
-
-    if (!info.isFormatSupported(format)) {
+     if (!outputDeviceInfo.isFormatSupported(format)) {
         qWarning() << "Cannot play audio.";
         return false;
     }
@@ -610,12 +637,12 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 		m_audioOutDevice = NULL;
 	}
 
-    m_audioOut = new QAudioOutput(format, this);
+    m_audioOut = new QAudioOutput(outputDeviceInfo, format, this);
     m_audioOut->setBufferSize(rate * channels * (size / 8) / 10);
 
 //    qDebug() << "Buffer size: " << m_audioOut->bufferSize();
 
-    connect(m_audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleAudioOutStateChanged(QAudio::State)));
+//    connect(m_audioOut, SIGNAL(stateChanged(QAudio::State)), this, SLOT(handleAudioOutStateChanged(QAudio::State)));
 
 	m_audioOutDevice = m_audioOut->start();
 

@@ -48,6 +48,7 @@
 #define	AUDIO_OUTPUT_DEVICE             "AudioOutputDevice"
 
 #define AUDIO_DEFAULT_DEVICE			"<default device>"
+#define AUDIO_DEFAULT_DEVICE_MAC		"Built-in Output"
 
 class AudioOutputDlg : public QDialog
 {
