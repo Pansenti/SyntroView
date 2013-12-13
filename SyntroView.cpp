@@ -723,7 +723,7 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
     delete settings;
 
     deviceString = QString("plughw:%1,%2").arg(card).arg(device);
-    qDebug() << deviceString;
+
     if ((err = snd_pcm_open(&m_audioOutHandle, qPrintable(deviceString), SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
         return false;
     }
