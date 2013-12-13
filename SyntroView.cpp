@@ -55,9 +55,16 @@ SyntroView::SyntroView()
     if (!settings->contains(AUDIO_OUTPUT_DEVICE))
 
 #ifdef Q_OS_OSX
-    settings->setValue(AUDIO_OUTPUT_DEVICE, AUDIO_DEFAULT_DEVICE_MAC);
+        settings->setValue(AUDIO_OUTPUT_DEVICE, AUDIO_DEFAULT_DEVICE_MAC);
 #else
-    settings->setValue(AUDIO_OUTPUT_DEVICE, AUDIO_DEFAULT_DEVICE);
+#ifdef Q_OS_LINUX
+        settings->setValue(AUDIO_OUTPUT_DEVICE, 0);
+
+    if (!settings->contains(AUDIO_OUTPUT_CARD))
+        settings->setValue(AUDIO_OUTPUT_CARD, 0);
+#else
+        settings->setValue(AUDIO_OUTPUT_DEVICE, AUDIO_DEFAULT_DEVICE);
+#endif
 #endif
 
     if (!settings->contains(AUDIO_ENABLE))
@@ -695,13 +702,26 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {
     int err;
     snd_pcm_hw_params_t *params;
+    QString deviceString;
 
     if (m_audioOutIsOpen) 
 		audioOutClose();
     if ((rate == 0) || (channels == 0) || (size == 0))
         return false;
 
-    if ((err = snd_pcm_open(&m_audioOutHandle, "plughw:0", SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
+    QSettings *settings = SyntroUtils::getSettings();
+
+    settings->beginGroup(AUDIO_GROUP);
+
+    int device = settings->value(AUDIO_OUTPUT_DEVICE).toInt();
+    int card = settings->value(AUDIO_OUTPUT_CARD).toInt();
+
+    settings->endGroup();
+    delete settings;
+
+    deviceString = QString("plughw:%1,%2").arg(card).arg(device);
+    qDebug() << deviceString;
+    if ((err = snd_pcm_open(&m_audioOutHandle, qPrintable(deviceString), SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
         return false;
     }
     snd_pcm_format_t sampleSize;

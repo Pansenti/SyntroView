@@ -62,11 +62,11 @@ void AudioOutputDlg::onOk()
 	}
 #else
     if (m_outputCard->text() != settings->value(AUDIO_OUTPUT_CARD).toString()) {
-        settings->setValue(AUDIO_OUTPUT_CARD, m_inputCard->text());
+        settings->setValue(AUDIO_OUTPUT_CARD, m_outputCard->text());
         changed = true;
     }
-    if (m_inputDevice->text() != settings->value(AUDIO_INPUT_DEVICE).toString()) {
-		settings->setValue(AUDIO_INPUT_DEVICE, m_inputDevice->text());
+    if (m_outputDevice->text() != settings->value(AUDIO_OUTPUT_DEVICE).toString()) {
+        settings->setValue(AUDIO_OUTPUT_DEVICE, m_outputDevice->text());
 		changed = true;
 	}
 #endif
