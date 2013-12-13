@@ -630,16 +630,19 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 #ifdef Q_OS_OSX
     if (rate == 8000) {
         format.setSampleRate(48000);
-        bufferSize = 48000 * channels * (size / 8) / 10;
+        bufferSize = 48000 * 2 * (size / 8) / 5;
     } else {
         format.setSampleRate(rate);
-        bufferSize = rate * channels * (size / 8) / 10;
+        bufferSize = rate * 2 * (size / 8) / 5;
     }
+    // Mac built-in only supports 2 channels
+
+    format.setChannelCount(2);
 #else
-    bufferSize = rate * channels * (size / 8) / 10;
+    bufferSize = rate * channels * (size / 8) / 5;
     format.setSampleRate(rate);
-#endif
     format.setChannelCount(channels);
+#endif
     format.setSampleSize(size);
     format.setCodec("audio/pcm");
     format.setByteOrder(QAudioFormat::LittleEndian);
@@ -685,7 +688,7 @@ bool SyntroView::audioOutWrite(const QByteArray& audioData)
 		return false;
 
 #ifdef Q_OS_OSX
-    return m_audioOutDevice->write(convert8kTo48k(audioData));
+    return m_audioOutDevice->write(convertToMac(audioData));
 #else
 	return m_audioOutDevice->write(audioData) == audioData.length();
 #endif
@@ -800,25 +803,37 @@ bool SyntroView::audioOutWrite(const QByteArray& audioData)
 }
 #endif
 
-QByteArray SyntroView::convert8kTo48k(const QByteArray& audioData)
+QByteArray SyntroView::convertToMac(const QByteArray& audioData)
 {
     QByteArray newData;
     int sampleLength;
     int sampleCount;
     int sampleOffset;
+    int copyCount;
 
-    if (m_audioRate != 8000)
+    if ((m_audioRate != 8000) && (m_audioChannels == 2))
         return audioData;
+
     sampleLength = (m_audioSize / 8) * m_audioChannels;
     sampleCount = audioData.count() / sampleLength;
+
+    if (m_audioRate == 8000)
+        copyCount = 6;
+    else
+        copyCount = 1;
 
     sampleOffset = 0;
 
     for (int sampleIndex = 0; sampleIndex < sampleCount; sampleIndex++, sampleOffset += sampleLength) {
-        for (int copy = 0; copy < 6; copy++) {
+        for (int copy = 0; copy < copyCount; copy++) {
             for (int i = 0; i < sampleLength; i++)
                 newData.append(audioData[sampleOffset + i]);
+            if (m_audioChannels == 1) {
+                for (int i = 0; i < sampleLength; i++)
+                    newData.append(audioData[sampleOffset + i]);
+            }
         }
+
     }
     return newData;
 }

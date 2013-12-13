@@ -87,7 +87,7 @@ private:
 	void saveWindowState();
 	void restoreWindowState();
 	void startControlServer();
-    QByteArray convert8kTo48k(const QByteArray& audioData);
+    QByteArray convertToMac(const QByteArray& audioData);
 
 	Ui::SyntroViewClass ui;
 
