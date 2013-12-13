@@ -81,12 +81,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_9AA8F78D91AC4FABAD9A56755E405F31"
-        "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A5FB9BE6DB20A9F10034ACE28EC570FD"
         "OwnerKey" = "8:_2FEAD535F56A45FC9C0A56A113657CA9"
         "MsmSig" = "8:_UNDEFINED"
@@ -595,7 +589,7 @@
         "UpgradeCode" = "8:{03DB0590-D187-4294-9AB4-112E809641D7}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
@@ -1135,20 +1129,6 @@
         }
         "MergeModule"
         {
-            "{CEE29DC0-9FBA-4B99-8D47-5BC643D9B626}:_9AA8F78D91AC4FABAD9A56755E405F31"
-            {
-            "UseDynamicProperties" = "11:TRUE"
-            "IsDependency" = "11:TRUE"
-            "SourcePath" = "8:Microsoft_VC100_CRT_x86.msm"
-                "Properties"
-                {
-                }
-            "LanguageId" = "3:0"
-            "Exclude" = "11:FALSE"
-            "Folder" = "8:"
-            "Feature" = "8:"
-            "IsolateTo" = "8:"
-            }
         }
         "ProjectOutput"
         {
