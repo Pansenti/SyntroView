@@ -26,9 +26,6 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-#ifdef WIN32
-	qApp->addLibraryPath(".\plugins");
-#endif
 	SyntroUtils::loadStandardSettings(PRODUCT_TYPE, a.arguments());
 
     SyntroView *w = new SyntroView();
