@@ -68,6 +68,9 @@
     <CustomBuild Include="AVSource.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="AudioOutputDlg.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeneratedFiles\ui_DisplayStats.h">
@@ -160,6 +163,15 @@
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="AVSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_AudioOutputDlg.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_AudioOutputDlg.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioOutputDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

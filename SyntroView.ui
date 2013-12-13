@@ -36,6 +36,7 @@
      <string>Settings</string>
     </property>
     <addaction name="actionVideoStreams"/>
+    <addaction name="actionAudioSetup"/>
     <addaction name="actionShow_name"/>
     <addaction name="actionShow_date"/>
     <addaction name="actionShow_time"/>
@@ -121,6 +122,11 @@
   <action name="actionVideoStreams">
    <property name="text">
     <string>Video streams ...</string>
+   </property>
+  </action>
+  <action name="actionAudioSetup">
+   <property name="text">
+    <string>Audio setup</string>
    </property>
   </action>
  </widget>

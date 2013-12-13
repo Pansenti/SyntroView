@@ -23,6 +23,7 @@
 #include "SyntroAboutDlg.h"
 #include "BasicSetupDlg.h"
 #include "StreamDialog.h"
+#include "AudioOutputDlg.h"
 
 #define GRID_SPACING 3
 
@@ -39,14 +40,28 @@ SyntroView::SyntroView()
 	m_audioRate = -1;
 	m_audioChannels = -1;
 
-#ifndef Q_OS_MAC
-	#ifndef Q_OS_UNIX
+
+#if defined(Q_OS_OSX) || defined(Q_OS_WIN32)
 		m_audioOut = NULL;
 		m_audioOutDevice = NULL;
-	#else
+#else
 		m_audioOutIsOpen = false;
-	#endif
 #endif
+
+    QSettings *settings = SyntroUtils::getSettings();
+
+    settings->beginGroup(AUDIO_GROUP);
+
+    if (!settings->contains(AUDIO_OUTPUT_DEVICE))
+        settings->setValue(AUDIO_OUTPUT_DEVICE, AUDIO_DEFAULT_DEVICE);
+ 
+    if (!settings->contains(AUDIO_ENABLE))
+        settings->setValue(AUDIO_ENABLE, true);
+
+	m_audioEnabled = settings->value(AUDIO_ENABLE).toBool();
+
+	settings->endGroup();
+	delete settings;
 
 	m_displayStats = new DisplayStats(this);
 
@@ -427,6 +442,8 @@ void SyntroView::initMenus()
 	connect(ui.actionVideoStreams, SIGNAL(triggered()), this, SLOT(onChooseVideoStreams()));
 	ui.actionVideoStreams->setEnabled(false);
 
+	connect(ui.actionAudioSetup, SIGNAL(triggered()), this, SLOT(onAudioSetup()));
+
 	connect(ui.onStats, SIGNAL(triggered()), this, SLOT(onStats()));
 	connect(ui.actionShow_name, SIGNAL(triggered()), this, SLOT(onShowName()));
 	connect(ui.actionShow_date, SIGNAL(triggered()), this, SLOT(onShowDate()));
@@ -508,6 +525,19 @@ void SyntroView::restoreWindowState()
 	delete settings;
 }
 
+void SyntroView::onAudioSetup()
+{
+	AudioOutputDlg *aod = new AudioOutputDlg(this);
+	if (aod->exec()) {
+		audioOutClose();
+	    QSettings *settings = SyntroUtils::getSettings();
+		settings->beginGroup(AUDIO_GROUP);
+		m_audioEnabled = settings->value(AUDIO_ENABLE).toBool();
+		settings->endGroup();
+		delete settings;
+	}
+}
+
 void SyntroView::onAbout()
 {
 	SyntroAbout *dlg = new SyntroAbout();
@@ -522,6 +552,9 @@ void SyntroView::onBasicSetup()
 
 void SyntroView::newAudio(QByteArray data, int rate, int channels, int size)
 {
+	if (!m_audioEnabled)
+		return;
+
 	if ((m_audioRate != rate) || (m_audioSize != size) || (m_audioChannels != channels)) {
 		if (!audioOutOpen(rate, channels, size)) {
             qDebug() << "Failed to open audio out device";
@@ -539,7 +572,13 @@ void SyntroView::newAudio(QByteArray data, int rate, int channels, int size)
 #if defined(Q_OS_WIN) || defined(Q_OS_OSX)
 bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {
-   foreach (const QAudioDeviceInfo& deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+	if (m_audioOut != NULL)
+		audioOutClose();
+
+    if ((rate == 0) || (channels == 0) || (size == 0))
+        return false;
+
+    foreach (const QAudioDeviceInfo& deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
         qDebug() << "Device name: " << deviceInfo.deviceName();
         qDebug() << "    codec: " << deviceInfo.supportedCodecs();
         qDebug() << "    channels:" << deviceInfo.supportedChannelCounts();
@@ -583,6 +622,17 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 	return true;
 }
 
+void SyntroView::audioOutClose()
+{
+	if (m_audioOut != NULL)
+		delete m_audioOut;
+	m_audioOut = NULL;
+	m_audioOutDevice = NULL;
+	m_audioRate = -1;
+	m_audioSize = -1;
+	m_audioChannels = -1;
+}
+
 bool SyntroView::audioOutWrite(const QByteArray& audioData)
 {
 	if (m_audioOutDevice == NULL)
@@ -603,10 +653,8 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
     int err;
     snd_pcm_hw_params_t *params;
 
-    if (m_audioOutIsOpen) {
-        snd_pcm_close(m_audioOutHandle);
-        m_audioOutIsOpen = false;
-    }
+    if (m_audioOutIsOpen) 
+		audioOutClose();
     if ((rate == 0) || (channels == 0) || (size == 0))
         return false;
 
@@ -664,6 +712,16 @@ openError:
         snd_pcm_hw_params_free(params);
     m_audioOutIsOpen = false;
     return false;
+}
+
+void SyntroView::audioOutClose()
+{
+	if (m_audioOutIsOpen)
+		snd_pcm_close(m_audioOutHandle);
+    m_audioOutIsOpen = false;
+	m_audioRate = -1;
+	m_audioSize = -1;
+	m_audioChannels = -1;
 }
 
 bool SyntroView::audioOutWrite(const QByteArray& audioData)

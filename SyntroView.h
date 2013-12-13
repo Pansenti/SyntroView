@@ -50,6 +50,7 @@ public slots:
 	void onAbout();
 	void onBasicSetup();
 	void onChooseVideoStreams();
+	void onAudioSetup();
     void onShowName();
 	void onShowDate();
 	void onShowTime();
@@ -62,6 +63,7 @@ public slots:
 	void dirResponse(QStringList directory);
 
 	void newAudio(QByteArray data, int rate, int channels, int size);
+	void audioOutClose();
 
 #if defined(Q_OS_OSX) || defined(Q_OS_WIN)
     void handleAudioOutStateChanged(QAudio::State);
@@ -121,6 +123,7 @@ private:
 
 	bool audioOutOpen(int rate, int channels, int size);
 	bool audioOutWrite(const QByteArray& audioData);
+	bool m_audioEnabled;
 
 	int m_audioChannels;
 	int m_audioSize;
