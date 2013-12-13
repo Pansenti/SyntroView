@@ -536,10 +536,10 @@ void SyntroView::newAudio(QByteArray data, int rate, int channels, int size)
 	audioOutWrite(data);
 }
 
-#ifndef Q_OS_UNIX
+#if defined(Q_OS_WIN) || defined(Q_OS_OSX)
 bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {
-/*    foreach (const QAudioDeviceInfo& deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+   foreach (const QAudioDeviceInfo& deviceInfo, QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
         qDebug() << "Device name: " << deviceInfo.deviceName();
         qDebug() << "    codec: " << deviceInfo.supportedCodecs();
         qDebug() << "    channels:" << deviceInfo.supportedChannelCounts();
@@ -548,7 +548,7 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
         qDebug() << "    types:" << deviceInfo.supportedSampleTypes();
         qDebug() << "    order:" << deviceInfo.supportedByteOrders();
      }
-*/
+
     QAudioFormat format;
 
     format.setSampleRate(rate);
@@ -600,7 +600,6 @@ void SyntroView::handleAudioOutStateChanged(QAudio::State /* state */)
 
 bool SyntroView::audioOutOpen(int rate, int channels, int size)
 {
-#ifndef Q_OS_MAC
     int err;
     snd_pcm_hw_params_t *params;
 
@@ -664,13 +663,11 @@ openError:
     if (params != NULL)
         snd_pcm_hw_params_free(params);
     m_audioOutIsOpen = false;
-#endif
     return false;
 }
 
 bool SyntroView::audioOutWrite(const QByteArray& audioData)
 {
-#ifndef Q_OS_MAC
     int writtenLength;
     int samples = audioData.length() / m_audioOutSampleSize;
 
@@ -679,8 +676,5 @@ bool SyntroView::audioOutWrite(const QByteArray& audioData)
         snd_pcm_prepare(m_audioOutHandle);
     }
     return writtenLength == samples;
-#else
-	return 0;
-#endif
 }
 #endif

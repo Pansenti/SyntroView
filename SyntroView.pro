@@ -26,6 +26,8 @@ unix {
 			/usr/local/lib/libSyntroGUI.dylib \
 			/usr/local/lib/libSyntroControlLib.dylib
 
+                QT += multimedia
+
 		INCLUDEPATH += /usr/local/include/syntro \
 				/usr/local/include/syntro/SyntroControlLib \
 				/usr/local/include/syntro/SyntroAV

@@ -17,8 +17,8 @@
 //  along with Syntro.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#ifndef SyntroVIEW_H
-#define SyntroVIEW_H
+#ifndef SYNTROVIEW_H
+#define SYNTROVIEW_H
 
 #define	PRODUCT_TYPE "SyntroView"
 
@@ -32,12 +32,10 @@
 #include "ImageWindow.h"
 #include "ViewSingleCamera.h"
 
-#ifndef Q_OS_MAC
-#ifdef Q_OS_UNIX
-#include <alsa/asoundlib.h>
-#else
+#if defined(Q_OS_OSX) || defined(Q_OS_WIN)
 #include <QAudioOutput>
-#endif
+#else
+#include <alsa/asoundlib.h>
 #endif
 
 class SyntroView : public QMainWindow
@@ -65,7 +63,7 @@ public slots:
 
 	void newAudio(QByteArray data, int rate, int channels, int size);
 
-#ifndef Q_OS_UNIX
+#if defined(Q_OS_OSX) || defined(Q_OS_WIN)
     void handleAudioOutStateChanged(QAudio::State);
 #endif
 
@@ -112,15 +110,13 @@ private:
 	ViewSingleCamera *m_singleCamera;
 	int m_selectedSource;
 
-#ifndef Q_OS_MAC
-#ifndef Q_OS_UNIX
+#if defined(Q_OS_OSX) || defined(Q_OS_WIN)
 	QAudioOutput *m_audioOut;
 	QIODevice *m_audioOutDevice;
 #else
     snd_pcm_t *m_audioOutHandle;
     bool m_audioOutIsOpen;
     int m_audioOutSampleSize;
-#endif
 #endif
 
 	bool audioOutOpen(int rate, int channels, int size);
@@ -133,4 +129,4 @@ private:
 	QString m_logTag;
 };
 
-#endif // SyntroVIEW_H
+#endif // SYNTROVIEW_H
