@@ -386,9 +386,6 @@ void SyntroView::layoutGrid()
 
 	QWidget *newCentralWidget = new QWidget();
 
-	if (count == 0)
-		return;
-
 	if (count > 30)
 		count = 30;
 	
