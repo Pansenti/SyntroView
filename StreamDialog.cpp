@@ -288,4 +288,4 @@ void StreamDialog::layoutWindow()
 	vLayout->addSpacing(20);
 	vLayout->addLayout(buttonLayout);
 	setLayout(vLayout);
-};
+}

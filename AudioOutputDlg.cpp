@@ -27,14 +27,14 @@
 #endif
 
 AudioOutputDlg::AudioOutputDlg(QWidget *parent)
-	: QDialog(parent)
+	: QDialog(parent, Qt::WindowCloseButtonHint | Qt::WindowTitleHint)
 {
 	setWindowTitle("Audio output configuration");
 
 	layoutWindow();
 
 	connect(m_buttons, SIGNAL(accepted()), this, SLOT(onOk()));
-    connect(m_buttons, SIGNAL(rejected()), this, SLOT(onCancel()));
+    connect(m_buttons, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 AudioOutputDlg::~AudioOutputDlg()
@@ -79,11 +79,6 @@ void AudioOutputDlg::onOk()
 		accept();
 	else
 		reject();
-}
-
-void AudioOutputDlg::onCancel()
-{
-	reject();
 }
 
 void AudioOutputDlg::layoutWindow()

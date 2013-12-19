@@ -549,14 +549,14 @@ void SyntroView::onAudioSetup()
 
 void SyntroView::onAbout()
 {
-	SyntroAbout *dlg = new SyntroAbout();
-	dlg->show();
+	SyntroAbout dlg(this);
+	dlg.exec();
 }
 
 void SyntroView::onBasicSetup()
 {
-	BasicSetupDlg *dlg = new BasicSetupDlg(this);
-	dlg->show();
+	BasicSetupDlg dlg(this);
+	dlg.exec();
 }
 
 void SyntroView::newAudio(QByteArray data, int rate, int channels, int size)
@@ -670,9 +670,11 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 
 void SyntroView::audioOutClose()
 {
-	if (m_audioOut != NULL)
+	if (m_audioOut != NULL) {
 		delete m_audioOut;
-	m_audioOut = NULL;
+		m_audioOut = NULL;
+	}
+
 	m_audioOutDevice = NULL;
 	m_audioRate = -1;
 	m_audioSize = -1;

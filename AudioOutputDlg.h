@@ -60,7 +60,6 @@ public:
 
 public slots:
 	void onOk();
-	void onCancel();
 
 private:
 	void layoutWindow();
