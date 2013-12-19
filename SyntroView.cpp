@@ -627,16 +627,16 @@ bool SyntroView::audioOutOpen(int rate, int channels, int size)
 #ifdef Q_OS_OSX
     if (rate == 8000) {
         format.setSampleRate(48000);
-        bufferSize = 48000 * 2 * (size / 8) / 5;
+        bufferSize = 48000 * 2 * (size / 8) / 3;
     } else {
         format.setSampleRate(rate);
-        bufferSize = rate * 2 * (size / 8) / 5;
+        bufferSize = rate * 2 * (size / 8) / 3;
     }
     // Mac built-in only supports 2 channels
 
     format.setChannelCount(2);
 #else
-    bufferSize = rate * channels * (size / 8) / 5;
+    bufferSize = rate * channels * (size / 8) / 3;
     format.setSampleRate(rate);
     format.setChannelCount(channels);
 #endif
