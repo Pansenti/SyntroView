@@ -59,6 +59,11 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionExit"/>
+   <addaction name="separator"/>
+   <addaction name="actionVideoStreams"/>
+   <addaction name="separator"/>
+   <addaction name="actionAudioSetup"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="onStats">
@@ -123,10 +128,16 @@
    <property name="text">
     <string>Video streams ...</string>
    </property>
+   <property name="iconText">
+    <string>Video Streams</string>
+   </property>
   </action>
   <action name="actionAudioSetup">
    <property name="text">
     <string>Audio setup</string>
+   </property>
+   <property name="iconText">
+    <string>Audio Setup</string>
    </property>
   </action>
  </widget>
