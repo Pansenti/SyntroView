@@ -32,7 +32,7 @@ public:
 	void clear();
 
 	int m_totalRecords;
-	int m_totalBytes;
+	qint64 m_totalBytes;
 	int m_records;
 	int m_bytes;
 	qreal m_recordRate;
