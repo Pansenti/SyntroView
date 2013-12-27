@@ -49,8 +49,9 @@ protected:
 private:
 	void saveDialogState();
 	void restoreDialogState();
+	QString formatByteTotalForDisplay(qint64 bytes);
 
-	int	m_timer;
+	int m_timer;
 	QList<AVSource *> m_avSources;
 
 	Ui::CDisplayStats ui;

@@ -81,7 +81,7 @@ void DisplayStats::addSource(AVSource *avSource)
 	item = new QTableWidgetItem(QString::number(data.m_totalRecords));
 	ui.statusCounts->setItem(row, 1, item);
 	
-	item = new QTableWidgetItem(QString::number(data.m_totalBytes));
+	item = new QTableWidgetItem(formatByteTotalForDisplay(data.m_totalBytes));
 	ui.statusCounts->setItem(row, 2, item);
 
 	item = new QTableWidgetItem(QString::number(data.m_recordRate, 'f', 1));
@@ -117,9 +117,33 @@ void DisplayStats::timerEvent(QTimerEvent *)
 		DisplayStatsData data = m_avSources.at(i)->stats();
 
 		ui.statusCounts->item(i, 1)->setText(QString::number(data.m_totalRecords));
-		ui.statusCounts->item(i, 2)->setText(QString::number(data.m_totalBytes));
+		ui.statusCounts->item(i, 2)->setText(formatByteTotalForDisplay(data.m_totalBytes));
 		ui.statusCounts->item(i, 3)->setText(QString::number(data.m_recordRate, 'f', 1));
 		ui.statusCounts->item(i, 4)->setText(QString::number(data.m_byteRate, 'f', 0));
+	}
+}
+
+QString DisplayStats::formatByteTotalForDisplay(qint64 bytes)
+{
+	qreal val;
+
+	if (bytes < 1000) {
+		return QString::number(bytes);
+	}
+	else if (bytes < 1000000) {
+		val = bytes;
+		val /= 1000.0;
+		return QString::number(val, 'f', 2) + " k";
+	}
+	else if (bytes < 1000000000) {
+		val = bytes;
+		val /= 1000000.0;
+		return QString::number(val, 'f', 2) + " M";
+	}
+	else {
+		val = bytes;
+		val /= 1000000000.0;
+		return QString::number(val, 'f', 2) + " G";
 	}
 }
 
