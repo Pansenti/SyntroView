@@ -23,41 +23,23 @@
 #include <qbuffer.h>
 #include <qbytearray.h>
 
-AVMuxDecode::AVMuxDecode(int slot) : SyntroThread("AVMuxDecode", "AVMuxDecode")
+AVMuxDecode::AVMuxDecode() 
+	: SyntroThread("AVMuxDecode", "AVMuxDecode")
 {
-    m_slot = slot;
-}
-
-void AVMuxDecode::initThread()
-{
-    m_timer = startTimer(AVMUXDECODE_INTERVAL);
-}
-
-void AVMuxDecode::finishThread()
-{
-    killTimer(m_timer);
-}
-
-void AVMuxDecode::timerEvent(QTimerEvent * /*event*/)
-{
-    m_avmuxLock.lock();
-    while (!m_avmuxQ.empty())
-        processAVData(m_avmuxQ.dequeue());
-    m_avmuxLock.unlock();
 }
 
 void AVMuxDecode::newAVData(QByteArray avmuxArray)
 {
-    m_avmuxLock.lock();
-    m_avmuxQ.enqueue(avmuxArray);
-    m_avmuxLock.unlock();
-}
+	if (avmuxArray.length() < sizeof(SYNTRO_RECORD_AVMUX))
+		return;
 
-void AVMuxDecode::processAVData(QByteArray avmuxArray)
-{
     SYNTRO_RECORD_AVMUX *avmux = (SYNTRO_RECORD_AVMUX *)avmuxArray.constData();
 
+	if (SYNTRO_RECORDHEADER_PARAM_NOOP == SyntroUtils::convertUC2ToInt(avmux->recordHeader.param))
+		return;
+
     SyntroUtils::avmuxHeaderToAVParams(avmux, &m_avParams);
+
     switch (m_avParams.avmuxSubtype) {
         case SYNTRO_RECORD_TYPE_AVMUX_MJPPCM:
             processMJPPCM(avmux);
@@ -71,32 +53,26 @@ void AVMuxDecode::processAVData(QByteArray avmuxArray)
 
 void AVMuxDecode::processMJPPCM(SYNTRO_RECORD_AVMUX *avmux)
 {
-    unsigned char *ptr;
-    int muxSize;
-    int videoSize;
-    int audioSize;
-    int param;
+    int videoSize = SyntroUtils::convertUC4ToInt(avmux->videoSize);
 
-    muxSize = SyntroUtils::convertUC4ToInt(avmux->muxSize);
-    videoSize = SyntroUtils::convertUC4ToInt(avmux->videoSize);
-    audioSize = SyntroUtils::convertUC4ToInt(avmux->audioSize);
-    param = SyntroUtils::convertUC2ToInt(avmux->recordHeader.param);
+    unsigned char *ptr = (unsigned char *)(avmux + 1) + SyntroUtils::convertUC4ToInt(avmux->muxSize);
 
-    ptr = (unsigned char *)(avmux + 1) + muxSize;        // pointer to video area
-
-    if ((videoSize != 0) || (param == SYNTRO_RECORDHEADER_PARAM_NOOP)) {
+    if (videoSize != 0) {
         // there is video data present
 
         if ((videoSize < 0) || (videoSize > 300000)) {
             printf("Illegal video data size %d\n", videoSize);
             return;
         }
+
         QImage image;
         image.loadFromData((const uchar *)ptr, videoSize, "JPEG");
-        emit newImage(m_slot, image, SyntroUtils::convertUC8ToInt64(avmux->recordHeader.timestamp));
+        emit newImage(image, SyntroUtils::convertUC8ToInt64(avmux->recordHeader.timestamp));
 
-        ptr += videoSize;                                   // move to next data area
+        ptr += videoSize;
     }
+
+    int audioSize = SyntroUtils::convertUC4ToInt(avmux->audioSize);
 
     if (audioSize != 0) {
         // there is audio data present
@@ -105,10 +81,11 @@ void AVMuxDecode::processMJPPCM(SYNTRO_RECORD_AVMUX *avmux)
             printf("Illegal audio data size %d\n", audioSize);
             return;
         }
-        emit newAudioSamples(m_slot, QByteArray((const char *)ptr, audioSize), 
+
+        emit newAudioSamples(QByteArray((const char *)ptr, audioSize), 
             SyntroUtils::convertUC8ToInt64(avmux->recordHeader.timestamp),
 			m_avParams.audioSampleRate, m_avParams.audioChannels, m_avParams.audioSampleSize);
-        ptr += audioSize;                        // move to next data area
+
+        ptr += audioSize;
     }
 }
-

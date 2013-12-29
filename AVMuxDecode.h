@@ -24,45 +24,23 @@
 
 #include <qmutex.h>
 
-#define AVMUXDECODE_INTERVAL  (SYNTRO_CLOCKS_PER_SEC / 100)
-
 class AVMuxDecode : public SyntroThread
 {
     Q_OBJECT
 
 public:
-    AVMuxDecode(int slot);
-    void newAVData(QByteArray avmuxArray);
-
-    // gstreamer callbacks
-
-    void processVideoSinkData();
-    void processAudioSinkData();
+    AVMuxDecode();
 
 public slots:
+    void newAVData(QByteArray avmuxArray);
 
 signals:
-    void newImage(int slot, QImage image, qint64 timestamp);
-    void newAudioSamples(int, QByteArray dataArray, qint64 timestamp, int rate, int channels, int size);
-
-protected:
-    void initThread();
-    void timerEvent(QTimerEvent *event);
-    void finishThread();
+    void newImage(QImage image, qint64 timestamp);
+    void newAudioSamples(QByteArray dataArray, qint64 timestamp, int rate, int channels, int size);
 
 private:
     void processMJPPCM(SYNTRO_RECORD_AVMUX *avmux);
     void processAVData(QByteArray avmuxArray);
-
-    void putVideoData(const unsigned char *data, int length);
-    void putAudioData(const unsigned char *data, int length);
-
-    int m_slot;
-
-    int m_timer;
-
-    QMutex m_avmuxLock;
-    QQueue <QByteArray> m_avmuxQ;
 
 	SYNTRO_AVPARAMS m_avParams;
 };
