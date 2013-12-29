@@ -60,18 +60,15 @@ void AVSource::setServicePort(int port)
 		stopBackgroundProcessing();
 	}
 	else if (!m_decoder) {
-		m_decoderMutex.lock();
+		m_decoder = new AVMuxDecode;
 
-		m_decoder = new AVMuxDecode(port);
-
-		connect(m_decoder, SIGNAL(newImage(int, QImage, qint64)), 
-			this, SLOT(newImage(int, QImage, qint64)));
+		connect(m_decoder, SIGNAL(newImage(QImage, qint64)), 
+			this, SLOT(newImage(QImage, qint64)));
 	
-		connect(m_decoder, SIGNAL(newAudioSamples(int, QByteArray, qint64, int, int, int)), 
-			this, SLOT(newAudioSamples(int, QByteArray, qint64, int, int, int)));
+		connect(m_decoder, SIGNAL(newAudioSamples(QByteArray, qint64, int, int, int)), 
+			this, SLOT(newAudioSamples(QByteArray, qint64, int, int, int)));
 
 		m_decoder->resumeThread();
-		m_decoderMutex.unlock();
 	}
 }
 
@@ -87,7 +84,6 @@ void AVSource::setLastUpdate(qint64 timestamp)
 
 QImage AVSource::image()
 {
-	QMutexLocker lock(&m_imageMutex);
 	return m_image;
 }
 
@@ -98,14 +94,12 @@ qint64 AVSource::imageTimestamp()
 
 void AVSource::stopBackgroundProcessing()
 {
-	QMutexLocker lock(&m_decoderMutex);
-
 	if (m_decoder) {
-		disconnect(m_decoder, SIGNAL(newImage(int, QImage, qint64)), 
-			this, SLOT(newImage(int, QImage, qint64)));
+		disconnect(m_decoder, SIGNAL(newImage(QImage, qint64)),  
+			this, SLOT(newImage(QImage, qint64)));
 
-		disconnect(m_decoder, SIGNAL(newAudioSamples(int, QByteArray, qint64, int, int, int)), 
-			this, SLOT(newAudioSamples(int, QByteArray, qint64, int, int, int)));
+		disconnect(m_decoder, SIGNAL(newAudioSamples(QByteArray, qint64, int, int, int)), 
+			this, SLOT(newAudioSamples(QByteArray, qint64, int, int, int)));
 
 		m_decoder->exitThread();
 		m_decoder = NULL;
@@ -138,10 +132,8 @@ void AVSource::setAVData(int servicePort, QByteArray rawData)
 }
 
 // signal from the decoder, processed image
-void AVSource::newImage(int, QImage image, qint64 timestamp)
+void AVSource::newImage(QImage image, qint64 timestamp)
 {
-	QMutexLocker lock(&m_imageMutex);
-
 	if (!image.isNull())
 		m_image = image;
 
@@ -149,7 +141,7 @@ void AVSource::newImage(int, QImage image, qint64 timestamp)
 }
 
 // signal from the decoder, processed sound
-void AVSource::newAudioSamples(int, QByteArray data, qint64, int rate, int channels, int size)
+void AVSource::newAudioSamples(QByteArray data, qint64, int rate, int channels, int size)
 {
 	if (m_audioEnabled)
 		emit newAudio(data, rate, channels, size);
