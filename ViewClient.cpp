@@ -17,9 +17,7 @@
 //  along with Syntro.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "SyntroView.h"
 #include "ViewClient.h"
-#include "AVMuxDecode.h"
 
 #define	VIEWCLIENT_BACKGROUND_INTERVAL (SYNTRO_CLOCKS_PER_SEC/100)
 
