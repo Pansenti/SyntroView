@@ -20,7 +20,7 @@
 #include <QtGui>
 #include "ImageWindow.h"
 
-#define	SPACESVIEW_CAMERA_DEADTIME		(10 * SYNTRO_CLOCKS_PER_SEC)
+#define	SPACESVIEW_CAMERA_DEADTIME		(15 * SYNTRO_CLOCKS_PER_SEC)
 
 
 ImageWindow::ImageWindow(AVSource *avSource, bool showName, bool showDate, 
