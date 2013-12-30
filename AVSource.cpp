@@ -28,7 +28,7 @@ AVSource::AVSource(QString streamName)
 	m_audioEnabled = false;
 	m_lastUpdate = 0;
 	m_stats = new DisplayStatsData();
-	connect(this, SIGNAL(updateBytes(int)), m_stats, SLOT(updateBytes(int)));
+	connect(this, SIGNAL(updateStats(int)), m_stats, SLOT(updateBytes(int)));
 }
 
 AVSource::~AVSource()
@@ -81,7 +81,6 @@ qint64 AVSource::lastUpdate() const
 
 void AVSource::setLastUpdate(qint64 timestamp)
 {
-	QMutexLocker lock(&m_updateMutex);
 	m_lastUpdate = timestamp;
 }
 
@@ -121,16 +120,11 @@ bool AVSource::audioEnabled() const
 	return m_audioEnabled;
 }
 
-// feed new raw data to the decoder, called from another thread
+// feed new raw data to the decoder, called from the Syntro client thread
 void AVSource::setAVMuxData(QByteArray data)
 {
-	QMutexLocker lock(&m_updateMutex);
-
-	emit updateBytes(data.size());
-
+	emit updateStats(data.size());
 	emit newAVMuxData(data);
-
-	m_lastUpdate = SyntroClock();
 }
 
 // signal from the decoder, processed image
@@ -140,6 +134,7 @@ void AVSource::newImage(QImage image, qint64 timestamp)
 		m_image = image;
 
 	m_imageTimestamp = timestamp;
+	m_lastUpdate = SyntroClock();
 }
 
 // signal from the decoder, processed sound
