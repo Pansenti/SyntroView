@@ -19,18 +19,45 @@
 
 #include "DisplayStatsData.h"
 
+#define STAT_TIMER_INTERVAL 5
 
 DisplayStatsData::DisplayStatsData()
 {
 	clear();
+	m_timer = startTimer(STAT_TIMER_INTERVAL * 1000);
 }
 
-void DisplayStatsData::update(int bytes)
+int DisplayStatsData::totalRecords() const
+{
+	return m_totalRecords;
+}
+
+qint64 DisplayStatsData::totalBytes() const
+{
+	return m_totalBytes;
+}
+
+qreal DisplayStatsData::recordRate() const
+{
+	return m_recordRate;
+}
+
+qreal DisplayStatsData::byteRate() const
+{
+	return m_byteRate;
+}
+
+void DisplayStatsData::updateBytes(int bytes)
 {
 	m_totalRecords++;
 	m_totalBytes += bytes;
 	m_records++;
 	m_bytes += bytes;
+}
+
+void DisplayStatsData::timerEvent(QTimerEvent *)
+{
+	updateRates(STAT_TIMER_INTERVAL);
 }
 
 void DisplayStatsData::updateRates(int secs)

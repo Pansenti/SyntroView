@@ -76,7 +76,7 @@ void ViewClient::appClientReceiveMulticast(int servicePort, SYNTRO_EHEAD *multiC
 			qDebug() << "Expecting avmux record, received record type" << recordType;
 		}
 		else {
-			avSource->setAVData(servicePort, QByteArray((const char *)avmuxHeader, len));  
+			avSource->setAVMuxData(QByteArray((const char *)avmuxHeader, len));  
 			clientSendMulticastAck(servicePort);
 		}
 	}

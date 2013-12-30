@@ -19,7 +19,6 @@
 
 #include "AVSource.h"
 
-#define STAT_TIMER_INTERVAL 5
 
 AVSource::AVSource(QString streamName)
 {
@@ -28,17 +27,17 @@ AVSource::AVSource(QString streamName)
 	m_servicePort = -1;
 	m_audioEnabled = false;
 	m_lastUpdate = 0;
-
-	m_statsTimer = startTimer(STAT_TIMER_INTERVAL * 1000);
+	m_stats = new DisplayStatsData();
+	connect(this, SIGNAL(updateBytes(int)), m_stats, SLOT(updateBytes(int)));
 }
 
 AVSource::~AVSource()
 {
 	stopBackgroundProcessing();
 
-	if (m_statsTimer) {
-		killTimer(m_statsTimer);
-		m_statsTimer = 0;
+	if (m_stats) {
+		delete m_stats;
+		m_stats = NULL;
 	}
 }
 
@@ -58,9 +57,12 @@ void AVSource::setServicePort(int port)
 
 	if (port == -1) {
 		stopBackgroundProcessing();
+		return;
 	}
 	else if (!m_decoder) {
 		m_decoder = new AVMuxDecode;
+
+		connect(this, SIGNAL(newAVMuxData(QByteArray)), m_decoder, SLOT(newAVMuxData(QByteArray)));
 
 		connect(m_decoder, SIGNAL(newImage(QImage, qint64)), 
 			this, SLOT(newImage(QImage, qint64)));
@@ -79,6 +81,7 @@ qint64 AVSource::lastUpdate() const
 
 void AVSource::setLastUpdate(qint64 timestamp)
 {
+	QMutexLocker lock(&m_updateMutex);
 	m_lastUpdate = timestamp;
 }
 
@@ -95,6 +98,8 @@ qint64 AVSource::imageTimestamp()
 void AVSource::stopBackgroundProcessing()
 {
 	if (m_decoder) {
+		disconnect(this, SIGNAL(newAVMuxData(QByteArray)), m_decoder, SLOT(newAVMuxData(QByteArray)));
+
 		disconnect(m_decoder, SIGNAL(newImage(QImage, qint64)),  
 			this, SLOT(newImage(QImage, qint64)));
 
@@ -116,18 +121,15 @@ bool AVSource::audioEnabled() const
 	return m_audioEnabled;
 }
 
-// feed new raw data to the decoder
-void AVSource::setAVData(int servicePort, QByteArray rawData)
+// feed new raw data to the decoder, called from another thread
+void AVSource::setAVMuxData(QByteArray data)
 {
-	if (servicePort != m_servicePort)
-		return;
+	QMutexLocker lock(&m_updateMutex);
 
-	if (!m_decoder)
-		return;
+	emit updateBytes(data.size());
 
-	m_stats.update(rawData.size());
+	emit newAVMuxData(data);
 
-	m_decoder->newAVData(rawData);
 	m_lastUpdate = SyntroClock();
 }
 
@@ -147,12 +149,7 @@ void AVSource::newAudioSamples(QByteArray data, qint64, int rate, int channels, 
 		emit newAudio(data, rate, channels, size);
 }
 
-void AVSource::timerEvent(QTimerEvent *)
-{
-	m_stats.updateRates(STAT_TIMER_INTERVAL);
-}
-
-DisplayStatsData AVSource::stats() const
+DisplayStatsData* AVSource::stats()
 {
 	return m_stats;
 }

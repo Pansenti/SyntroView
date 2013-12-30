@@ -69,6 +69,11 @@ void DisplayStats::addSource(AVSource *avSource)
 {
 	int row = ui.statusCounts->rowCount();
 
+	DisplayStatsData *stats = avSource->stats();
+	
+	if (!stats)
+		return;
+
 	ui.statusCounts->insertRow(row);
 	ui.statusCounts->setRowHeight(row, DEFAULT_ROW_HEIGHT);
 
@@ -76,18 +81,16 @@ void DisplayStats::addSource(AVSource *avSource)
 	item->setTextAlignment(Qt::AlignLeft | Qt::AlignBottom);
 	ui.statusCounts->setItem(row, 0, item);
 
-	DisplayStatsData data = avSource->stats();
-
-	item = new QTableWidgetItem(QString::number(data.m_totalRecords));
+	item = new QTableWidgetItem(QString::number(stats->totalRecords()));
 	ui.statusCounts->setItem(row, 1, item);
 	
-	item = new QTableWidgetItem(formatByteTotalForDisplay(data.m_totalBytes));
+	item = new QTableWidgetItem(formatByteTotalForDisplay(stats->totalBytes()));
 	ui.statusCounts->setItem(row, 2, item);
 
-	item = new QTableWidgetItem(QString::number(data.m_recordRate, 'f', 1));
+	item = new QTableWidgetItem(QString::number(stats->recordRate(), 'f', 1));
 	ui.statusCounts->setItem(row, 3, item);
 
-	item = new QTableWidgetItem(QString::number(data.m_byteRate, 'f', 0));
+	item = new QTableWidgetItem(QString::number(stats->byteRate(), 'f', 0));
 	ui.statusCounts->setItem(row, 4, item);
 
 	m_avSources.append(avSource);
@@ -114,12 +117,14 @@ void DisplayStats::removeSource(QString name)
 void DisplayStats::timerEvent(QTimerEvent *)
 {	
 	for (int i = 0; i < m_avSources.count(); i++) {
-		DisplayStatsData data = m_avSources.at(i)->stats();
+		DisplayStatsData *stats = m_avSources.at(i)->stats();
 
-		ui.statusCounts->item(i, 1)->setText(QString::number(data.m_totalRecords));
-		ui.statusCounts->item(i, 2)->setText(formatByteTotalForDisplay(data.m_totalBytes));
-		ui.statusCounts->item(i, 3)->setText(QString::number(data.m_recordRate, 'f', 1));
-		ui.statusCounts->item(i, 4)->setText(QString::number(data.m_byteRate, 'f', 0));
+		if (stats) {
+			ui.statusCounts->item(i, 1)->setText(QString::number(stats->totalRecords()));
+			ui.statusCounts->item(i, 2)->setText(formatByteTotalForDisplay(stats->totalBytes()));
+			ui.statusCounts->item(i, 3)->setText(QString::number(stats->recordRate(), 'f', 1));
+			ui.statusCounts->item(i, 4)->setText(QString::number(stats->byteRate(), 'f', 0));
+		}
 	}
 }
 

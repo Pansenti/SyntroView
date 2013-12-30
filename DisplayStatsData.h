@@ -21,22 +21,38 @@
 #define DISPLAYSTATSDATA_H
 
 #include <qstring.h>
+#include <qobject.h>
 
-class DisplayStatsData
+class DisplayStatsData : public QObject
 {
+	Q_OBJECT
+
 public:
 	DisplayStatsData();
+	
+	int totalRecords() const;
+	qint64 totalBytes() const;
+	qreal recordRate() const;
+	qreal byteRate() const;	
 
-	void update(int bytes);
-	void updateRates(int secs);
 	void clear();
 
+public slots:
+	void updateBytes(int bytes);
+
+protected:
+	void timerEvent(QTimerEvent *);
+
+private:
+	void updateRates(int secs);
+	
+	int m_timer;
 	int m_totalRecords;
 	qint64 m_totalBytes;
-	int m_records;
-	int m_bytes;
 	qreal m_recordRate;
 	qreal m_byteRate;
+	int m_records;
+	int m_bytes;
 };
 
 #endif // DISPLAYSTATSDATA_H

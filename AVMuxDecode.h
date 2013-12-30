@@ -32,7 +32,7 @@ public:
     AVMuxDecode();
 
 public slots:
-    void newAVData(QByteArray avmuxArray);
+    void newAVMuxData(QByteArray data);
 
 signals:
     void newImage(QImage image, qint64 timestamp);

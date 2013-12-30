@@ -28,12 +28,12 @@ AVMuxDecode::AVMuxDecode()
 {
 }
 
-void AVMuxDecode::newAVData(QByteArray avmuxArray)
+void AVMuxDecode::newAVMuxData(QByteArray data)
 {
-	if (avmuxArray.length() < sizeof(SYNTRO_RECORD_AVMUX))
+	if (data.length() < sizeof(SYNTRO_RECORD_AVMUX))
 		return;
 
-    SYNTRO_RECORD_AVMUX *avmux = (SYNTRO_RECORD_AVMUX *)avmuxArray.constData();
+    SYNTRO_RECORD_AVMUX *avmux = (SYNTRO_RECORD_AVMUX *)data.constData();
 
 	if (SYNTRO_RECORDHEADER_PARAM_NOOP == SyntroUtils::convertUC2ToInt(avmux->recordHeader.param))
 		return;
