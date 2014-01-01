@@ -70,7 +70,9 @@ void AVMuxDecode::processMJPPCM(SYNTRO_RECORD_AVMUX *avmux)
         emit newImage(image, SyntroUtils::convertUC8ToInt64(avmux->recordHeader.timestamp));
 
         ptr += videoSize;
-    }
+    } else {
+		emit newImage(QImage(), SyntroUtils::convertUC8ToInt64(avmux->recordHeader.timestamp));
+	}
 
     int audioSize = SyntroUtils::convertUC4ToInt(avmux->audioSize);
 
