@@ -130,10 +130,10 @@ void AVSource::setAVMuxData(QByteArray data)
 // signal from the decoder, processed image
 void AVSource::newImage(QImage image, qint64 timestamp)
 {
-	if (!image.isNull())
+    if (!image.isNull()) {
 		m_image = image;
-
-	m_imageTimestamp = timestamp;
+        m_imageTimestamp = timestamp;
+    }
 	m_lastUpdate = SyntroClock();
 }
 

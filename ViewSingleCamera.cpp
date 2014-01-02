@@ -89,7 +89,7 @@ void ViewSingleCamera::newImage(QImage image)
 	m_lastFrame = SyntroClock();
 
 	if (image.width() == 0)
-		ui.cameraView->setText("No Image");
+        return;
 	else
 		ui.cameraView->setPixmap(QPixmap::fromImage(image.scaled(size(), Qt::KeepAspectRatio)));
 

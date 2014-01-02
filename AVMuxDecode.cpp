@@ -35,9 +35,6 @@ void AVMuxDecode::newAVMuxData(QByteArray data)
 
     SYNTRO_RECORD_AVMUX *avmux = (SYNTRO_RECORD_AVMUX *)data.constData();
 
-	if (SYNTRO_RECORDHEADER_PARAM_NOOP == SyntroUtils::convertUC2ToInt(avmux->recordHeader.param))
-		return;
-
     SyntroUtils::avmuxHeaderToAVParams(avmux, &m_avParams);
 
     switch (m_avParams.avmuxSubtype) {
@@ -71,7 +68,8 @@ void AVMuxDecode::processMJPPCM(SYNTRO_RECORD_AVMUX *avmux)
 
         ptr += videoSize;
     } else {
-		emit newImage(QImage(), SyntroUtils::convertUC8ToInt64(avmux->recordHeader.timestamp));
+        if (SYNTRO_RECORDHEADER_PARAM_NOOP == SyntroUtils::convertUC2ToInt(avmux->recordHeader.param))
+            emit newImage(QImage(), SyntroUtils::convertUC8ToInt64(avmux->recordHeader.timestamp));
 	}
 
     int audioSize = SyntroUtils::convertUC4ToInt(avmux->audioSize);

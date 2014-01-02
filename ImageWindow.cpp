@@ -116,7 +116,6 @@ void ImageWindow::setSelected(bool select)
 void ImageWindow::newImage(QImage image, qint64 timestamp)
 {
     m_lastFrame = SyntroClock();
-
     if (image.width() == 0)
         return;
 
