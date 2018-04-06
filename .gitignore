@@ -38,3 +38,4 @@ GeneratedFiles/
 *.bz2
 *.pro.user*
 .DS_store
+*.db
