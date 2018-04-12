@@ -1,9 +1,9 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SyntroView", "SyntroView.vcxproj", "{33DDC43F-741F-4455-AF77-DDC69C43C916}"
-EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SyntroView Setup", "SyntroViewSetup\SyntroViewSetup.vdproj", "{213BC809-F26C-48E9-8194-32F8D37D0067}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +15,6 @@ Global
 		{33DDC43F-741F-4455-AF77-DDC69C43C916}.Debug|Win32.Build.0 = Debug|Win32
 		{33DDC43F-741F-4455-AF77-DDC69C43C916}.Release|Win32.ActiveCfg = Release|Win32
 		{33DDC43F-741F-4455-AF77-DDC69C43C916}.Release|Win32.Build.0 = Release|Win32
-		{213BC809-F26C-48E9-8194-32F8D37D0067}.Debug|Win32.ActiveCfg = Debug
-		{213BC809-F26C-48E9-8194-32F8D37D0067}.Release|Win32.ActiveCfg = Release
-		{213BC809-F26C-48E9-8194-32F8D37D0067}.Release|Win32.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
