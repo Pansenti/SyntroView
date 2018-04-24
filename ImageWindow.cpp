@@ -116,10 +116,15 @@ void ImageWindow::setSelected(bool select)
 void ImageWindow::newImage(QImage image, qint64 timestamp)
 {
     m_lastFrame = SyntroClock();
+
     if (image.width() == 0)
         return;
 
 	m_idle = false;
+
+	if (isMinimized() || !isVisible())
+		return;
+
 	m_image = image;
  
     QPixmap pixmap = QPixmap::fromImage(image.scaled(size(), Qt::KeepAspectRatio));
